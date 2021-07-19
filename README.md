@@ -6,7 +6,7 @@
 : `npm run dev`
 
 - For production process
-: `npm start`
+: `npm run prod`
 
 - For code linting
 : `npm run lint`
