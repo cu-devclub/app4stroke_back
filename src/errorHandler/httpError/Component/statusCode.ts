@@ -12,3 +12,5 @@ const statusCode = {
   TOO_MANY_REQUEST: 429,
   INTERNAL_SERVER_ERROR: 500
 }
+
+module.exports = statusCode
