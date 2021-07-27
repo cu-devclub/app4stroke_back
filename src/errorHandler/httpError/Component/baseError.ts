@@ -4,14 +4,14 @@ class BaseError extends Error{
   statusCode: number;
 
   constructor(name:string, statusCode:number, description:string) {
-    super(description)
+    super(description);
 
-    Object.setPrototypeOf(this, new.target.prototype)
-    this.name = name
-    this.statusCode = statusCode
+    Object.setPrototypeOf(this, new.target.prototype);
+    this.name = name;
+    this.statusCode = statusCode;
 
-  }
+  };
 
-}
+};
 
-module.exports = BaseError
+export default BaseError;
