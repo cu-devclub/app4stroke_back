@@ -1,4 +1,4 @@
-import Api404 from "./Component/api404";
+import Api404 from "./Component/NotFoundError";
 
 
 export { Api404 }
