@@ -3,7 +3,7 @@ import httpStatusCode from "./httpStatusCode";
 
 class BadRequestError extends BaseError{
   constructor(
-    name = 'Bad Request Error',
+    name = 'Bad Request',
     statusCode = httpStatusCode.BAD_REQUEST,
     description: string
   ){
