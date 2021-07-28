@@ -7,8 +7,8 @@ class NotFoundError extends BaseError{
     statusCode = httpStatusCode.NOT_FOUND,
     description: string
   ){
-    super(name, statusCode, description)
-  }
-}
+    super(name, statusCode, description);
+  };
+};
 
 export default NotFoundError;
