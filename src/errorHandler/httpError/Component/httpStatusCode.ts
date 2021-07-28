@@ -1,4 +1,4 @@
-const statusCode = {
+const httpStatusCode = {
   OK: 200,
   CREATED: 201,
   NO_CONTENT: 204,
@@ -13,4 +13,4 @@ const statusCode = {
   INTERNAL_SERVER_ERROR: 500
 };
 
-export default statusCode;
+export default httpStatusCode;
