@@ -5,7 +5,7 @@ import { format } from "util";
 import processFile from "../middlewares/upload";
 
 const storage = new Storage({ keyFilename: "google-cloud-key.json" });
-const bucket = storage.bucket("stroke-images");
+const bucket = storage.bucket("chula-stroke-images");
 
 export default {
     upload: async(req: Request, res: Response) => {
