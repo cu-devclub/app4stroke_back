@@ -5,9 +5,11 @@ const mongoose = require('mongoose');
 
 mongoose.connect(process.env.DB_URI, {
     useNewUrlParser: true
-}, (err) => {
+}, (err: any) => {
     if (!err) { console.log('MongoDB Connection Succeeded.') }
     else { console.log('Error in DB connection : ' + err) }
 });
 
 require('../models/user');
+
+export{};

@@ -18,6 +18,7 @@
   "devDependencies": {
     "@types/cors": "^2.8.10",
     "@types/express": "^4.17.12",
+    "@types/express-handlebars": "^5.3.1",
     "@types/morgan": "^1.9.2",
     "@types/node": "^15.12.2",
     "@typescript-eslint/eslint-plugin": "^4.26.1",
@@ -25,6 +26,8 @@
     "eslint": "^7.28.0",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
+    "express-handlebars": "^3.0.0",
+    "handlebars": "^4.7.7",
     "morgan": "^1.10.0",
     "prettier": "2.3.1",
     "tsc-watch": "^4.4.0",
@@ -36,8 +39,6 @@
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "express-handlebars": "^3.0.0",
-    "handlebars": "^4.7.7",
-    "mongoose": "^5.13.3"
+    "mongoose": "^5.13.5"
   }
 }
