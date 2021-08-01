@@ -18,6 +18,7 @@
   "devDependencies": {
     "@types/cors": "^2.8.10",
     "@types/express": "^4.17.12",
+    "@types/express-handlebars": "^5.3.1",
     "@types/morgan": "^1.9.2",
     "@types/multer": "^1.4.7",
     "@types/node": "^15.12.2",
@@ -26,6 +27,8 @@
     "eslint": "^7.28.0",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
+    "express-handlebars": "^3.0.0",
+    "handlebars": "^4.7.7",
     "morgan": "^1.10.0",
     "prettier": "2.3.1",
     "tsc-watch": "^4.4.0",
@@ -33,9 +36,12 @@
   },
   "dependencies": {
     "@google-cloud/storage": "^5.11.0",
+    "multer": "^1.4.2"
+    "@handlebars/allow-prototype-access": "^1.0.5",
+    "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "multer": "^1.4.2"
+    "mongoose": "^5.13.5"
   }
 }
