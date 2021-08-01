@@ -5,20 +5,17 @@ import { Request, Response } from 'express';
 
 export default {
     getUser: (req: Request, res: Response): void => {
-        // res.send("getUser");
         res.render("/addOrEdit", {
             viewTitle: "Insert User"
         });
     },
     postUser: (req: Request, res: Response): void => {
-        // res.send("postUser");
         if (req.body._id == '')
             insertRecord(req, res);
             else
             updateRecord(req, res);
     },
     getUserList: (req: Request, res: Response): void => {
-        // res.send("getUserList");
         User.find((err: any, docs: any) => {
             if (!err) {
                 res.render("/list", {
@@ -31,7 +28,6 @@ export default {
         });
     },
     updateUser: (req: Request, res: Response): void => {
-        // res.send("updateUser");
         User.findById(req.params.id, (err: any, doc: any) => {
             if (!err) {
                 res.render("/addOrEdit", {
@@ -42,7 +38,6 @@ export default {
         });
     },
     deleteUser: (req: Request, res: Response): void => {
-        // res.send("deleteUser");
         User.findByIdAndRemove(req.params.id, (err: any, doc: any) => {
             if (!err) {
                 res.redirect('/list');
