@@ -6,6 +6,8 @@ import NotFoundError from "./Component/NotFoundError";
 import RequestTimeoutError from "./Component/RequestTimeoutError";
 import TooManyRequestError from "./Component/TooManyRequestError";
 import UnauthorizedError from "./Component/UnauthorizedError";
+import UnprocessableEntityError from "./Component/UnprocessableEntityError";
+
 
 export {
   BadRequestError,
@@ -15,5 +17,6 @@ export {
   NotFoundError,
   RequestTimeoutError,
   TooManyRequestError,
-  UnauthorizedError
+  UnauthorizedError,
+  UnprocessableEntityError
 };
