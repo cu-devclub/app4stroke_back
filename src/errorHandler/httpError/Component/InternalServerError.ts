@@ -3,9 +3,9 @@ import httpStatusCode from "./httpStatusCode";
 
 class InternalServerError extends BaseError{
   constructor(
+    description: string,
     name = 'internal server error',
-    statusCode = httpStatusCode.INTERNAL_SERVER_ERROR,
-    description: string
+    statusCode = httpStatusCode.INTERNAL_SERVER_ERROR
   ){
     super(name, statusCode, description);
   };

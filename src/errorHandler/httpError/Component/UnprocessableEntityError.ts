@@ -3,9 +3,9 @@ import httpStatusCode from "./httpStatusCode";
 
 class UnprocessableEntityError extends BaseError{
   constructor(
+    description: string,
     name = 'Unprocessable Entity',
-    statusCode = httpStatusCode.REQUEST_TIMEOUT,
-    description: string
+    statusCode = httpStatusCode.REQUEST_TIMEOUT
   ){
     super(name, statusCode, description);
   };
