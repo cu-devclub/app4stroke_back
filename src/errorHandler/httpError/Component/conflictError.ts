@@ -3,9 +3,9 @@ import httpStatusCode from "./httpStatusCode";
 
 class ConflictError extends BaseError{
   constructor(
+    description: string,
     name = 'conflict',
-    statusCode = httpStatusCode.CONFLICT,
-    description: string
+    statusCode = httpStatusCode.CONFLICT
   ){
     super(name, statusCode, description);
   };

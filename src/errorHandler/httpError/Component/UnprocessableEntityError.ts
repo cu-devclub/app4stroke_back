@@ -1,14 +1,14 @@
 import BaseError from "./baseError";
 import httpStatusCode from "./httpStatusCode";
 
-class TooManyRequestError extends BaseError{
+class UnprocessableEntityError extends BaseError{
   constructor(
     description: string,
-    name = 'too many request',
-    statusCode = httpStatusCode.TOO_MANY_REQUEST
+    name = 'Unprocessable Entity',
+    statusCode = httpStatusCode.REQUEST_TIMEOUT
   ){
     super(name, statusCode, description);
   };
 };
 
-export default TooManyRequestError;
+export default UnprocessableEntityError;
