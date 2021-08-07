@@ -3,9 +3,9 @@ import httpStatusCode from "./httpStatusCode";
 
 class UnauthorizedError extends BaseError {
   constructor(
+    description: string,
     name = 'Unauthorized',
-    statusCode = httpStatusCode.UNAUTHORIZED,
-    description: string
+    statusCode = httpStatusCode.UNAUTHORIZED
   ){
     super(name, statusCode, description)
   };
