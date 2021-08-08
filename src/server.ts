@@ -13,6 +13,8 @@ const mg = morgan('dev');
 
 app.use(cors());
 app.use(mg);
+app.use(express.json());
+app.use(express.urlencoded());
 app.use('/api', apiRouter);
 
 app.listen(APP_PORT, (): void => {
