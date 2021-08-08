@@ -1,9 +1,7 @@
 import { Router } from "express";
-
+import PredictScore from "../controllers/predictScore";
 const router = Router();
 
-router.get('/predictScore/:a', (req,res)=>{
-  res.send(req.params)
-});
+router.post('/predictScore', PredictScore)
 
 export default router;
