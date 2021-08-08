@@ -20,6 +20,7 @@
     "@types/express": "^4.17.12",
     "@types/express-handlebars": "^5.3.1",
     "@types/morgan": "^1.9.2",
+    "@types/multer": "^1.4.7",
     "@types/node": "^15.12.2",
     "@typescript-eslint/eslint-plugin": "^4.26.1",
     "@typescript-eslint/parser": "^4.26.1",
@@ -40,5 +41,7 @@
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "mongoose": "^5.13.5"
+    "@google-cloud/storage": "^5.11.0",
+    "multer": "^1.4.2"
   }
 }
