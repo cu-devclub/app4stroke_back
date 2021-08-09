@@ -5,9 +5,7 @@ import { check, validationResult } from 'express-validator';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 // import auth from '../middlewares/auth';
-
-import mongoose from 'mongoose';
-const User = mongoose.model('User');
+import User from '../models/user';
 
 interface UserRequest extends Request {
   user: { username: string; email: string; password: string };
