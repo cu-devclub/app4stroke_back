@@ -1,16 +1,17 @@
 //FILENAME : db.js
 
-const mongoose = require("mongoose");
+import mongoose from 'mongoose';
 
 // Replace this with your MONGOURI.
-const MONGOURI = "mongodb+srv://term_2222:termTERMPT2222@node-auth.vyn9k.mongodb.net/node-auth?retryWrites=true&w=majority";
+const MONGOURI =
+  'mongodb+srv://USERNAME:PASSWORD@node-auth.vyn9k.mongodb.net/node-auth?retryWrites=true&w=majority';
 
 const InitiateMongoServer = async () => {
   try {
     await mongoose.connect(MONGOURI, {
-      useNewUrlParser: true
+      useNewUrlParser: true,
     });
-    console.log("Connected to DB !!");
+    console.log('Connected to DB !!');
   } catch (e) {
     console.log(e);
     throw e;
