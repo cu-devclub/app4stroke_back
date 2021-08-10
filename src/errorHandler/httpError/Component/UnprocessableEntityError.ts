@@ -1,14 +1,14 @@
-import BaseError from "./baseError";
-import httpStatusCode from "./httpStatusCode";
+import BaseError from './baseError';
+import { httpStatusCode } from './httpStatus';
 
-class UnprocessableEntityError extends BaseError{
+class UnprocessableEntityError extends BaseError {
   constructor(
-    description: string,
+    description: string | undefined,
     name = 'Unprocessable Entity',
-    statusCode = httpStatusCode.REQUEST_TIMEOUT
-  ){
+    statusCode = httpStatusCode.REQUEST_TIMEOUT,
+  ) {
     super(name, statusCode, description);
-  };
-};
+  }
+}
 
 export default UnprocessableEntityError;

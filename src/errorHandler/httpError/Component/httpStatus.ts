@@ -1,0 +1,30 @@
+interface statusText {
+  [key: number]: string;
+}
+
+const httpStatusCode = {
+  NOT_MODIFIED: 304,
+  BAD_REQUEST: 400,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
+  NOT_FOUND: 404,
+  REQUEST_TIMEOUT: 408,
+  CONFLICT: 409,
+  UNPROCESSABLE_ENTITY: 422,
+  TOO_MANY_REQUEST: 429,
+  INTERNAL_SERVER_ERROR: 500,
+};
+
+const httpStatusText: statusText = {
+  304: 'NOT_MODIFIED',
+  400: 'BAD_REQUEST',
+  401: 'UNAUTHORIZED',
+  403: 'FORBIDDEN',
+  404: 'NOT_FOUND',
+  408: 'REQUEST_TIMEOUT',
+  409: 'CONFLICT',
+  422: 'UNPROCESSABLE_ENTITY',
+  429: 'TOO_MANY_REQUEST',
+  500: 'INTERNAL_SERVER_ERROR',
+};
+export { httpStatusCode, httpStatusText };

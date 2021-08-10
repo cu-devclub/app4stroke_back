@@ -1,14 +1,14 @@
-import BaseError from "./baseError";
-import httpStatusCode from "./httpStatusCode";
+import BaseError from './baseError';
+import { httpStatusCode } from './httpStatus';
 
-class RequestTimeoutError extends BaseError{
+class RequestTimeoutError extends BaseError {
   constructor(
-    description: string,
+    description: string | undefined,
     name = 'Request Timeout',
-    statusCode = httpStatusCode.REQUEST_TIMEOUT
-  ){
+    statusCode = httpStatusCode.REQUEST_TIMEOUT,
+  ) {
     super(name, statusCode, description);
-  };
-};
+  }
+}
 
 export default RequestTimeoutError;

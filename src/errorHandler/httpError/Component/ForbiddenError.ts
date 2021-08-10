@@ -1,14 +1,14 @@
-import BaseError from "./baseError";
-import httpStatusCode from "./httpStatusCode";
+import BaseError from './baseError';
+import { httpStatusCode } from './httpStatus';
 
 class ForbiddenError extends BaseError {
   constructor(
-    description: string,
+    description: string | undefined,
     name = 'Forbidden',
-    statusCode = httpStatusCode.FORBIDDEN
-  ){
+    statusCode = httpStatusCode.FORBIDDEN,
+  ) {
     super(name, statusCode, description);
-  };
-};
+  }
+}
 
 export default ForbiddenError;
