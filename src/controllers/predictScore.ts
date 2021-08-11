@@ -1,7 +1,7 @@
 import Joi from 'joi';
 import axios, { AxiosRequestConfig } from 'axios';
 import { Request, Response } from 'express';
-import { InternalServerError } from '../errorHandler/httpError/httpError';
+import httpError from '../errorHandler/httpError/httpError';
 
 const config: AxiosRequestConfig = {
   method: 'post',
@@ -79,19 +79,16 @@ const predictScoreRequestDataSchema = Joi.object({
 const PredictScore = async (req: Request, res: Response) => {
   try {
     const data = await predictScoreRequestDataSchema.validateAsync(req.body);
-
     const postPredictScore = await axios({ ...config, data: data });
 
     res.json(postPredictScore.data);
   } catch (e: any) {
     if (e.code === 'ECONNREFUSED') {
-      const errorHandle = new InternalServerError(e.message);
-      res.status(errorHandle.statusCode);
-      res.json({
-        message: errorHandle.message,
-        code: errorHandle.statusCode,
-      });
+      res.status(500).send(httpError(500, e.message));
+    } else if (e.name == 'ValidationError') {
+      res.status(400).send(httpError(400, e.details[0].message));
     } else {
+      res.status(0).send('Unknown Error');
     }
   }
 };
