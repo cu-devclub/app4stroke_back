@@ -12,7 +12,8 @@ interface UserRequest extends Request {
 }
 
 export default {
-  signup: async (req: UserRequest, res: Response) => {
+  signup: async (req: Request, res: Response) => {
+    console.log(req.body);
     [
       check('username', 'Please Enter a Valid Username').not().isEmpty(),
       check('email', 'Please enter a valid email').isEmail(),
@@ -68,11 +69,11 @@ export default {
         },
       );
     } catch (err) {
-      console.log(err.message);
+      console.log(err);
       res.status(500).send('Error in Saving');
     }
   },
-  login: async (req: UserRequest, res: Response) => {
+  login: async (req: Request, res: Response) => {
     [
       check('email', 'Please enter a valid email').isEmail(),
       check('password', 'Please enter a valid password').isLength({ min: 6 }),
@@ -128,11 +129,21 @@ export default {
       });
     }
   },
-  me: async (req: UserRequest, res: Response) => {
+  me: async (req: Request, res: Response) => {
     try {
+      isUserRequest(req);
       res.json({ username: req.user.username, email: req.user.email });
     } catch (e) {
       res.send({ message: 'Error in Fetching user' });
     }
   },
+};
+
+const isUserRequest: (
+  req: Request | UserRequest,
+) => asserts req is UserRequest = (req: Request | UserRequest) => {
+  if ('user' in req) {
+    return;
+  }
+  throw new Error('this is not user request');
 };

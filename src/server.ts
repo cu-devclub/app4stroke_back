@@ -3,6 +3,7 @@ import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import apiRouter from './routes/api';
+import bodyParser from 'body-parser';
 
 dotenv.config();
 const APP_PORT = process.env.APP_PORT;
@@ -13,6 +14,7 @@ const mg = morgan('dev');
 
 app.use(cors());
 app.use(mg);
+app.use(bodyParser.json());
 app.use('/api', apiRouter);
 
 app.listen(APP_PORT, (): void => {
