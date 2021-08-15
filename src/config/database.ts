@@ -5,6 +5,7 @@ const InitiateMongoServer = async () => {
   try {
     await mongoose.connect(MONGOURI, {
       useNewUrlParser: true,
+      useUnifiedTopology: true,
     });
     console.log('Connected to DB !!');
   } catch (e) {
@@ -13,4 +14,4 @@ const InitiateMongoServer = async () => {
   }
 };
 
-module.exports = InitiateMongoServer;
+export default InitiateMongoServer;

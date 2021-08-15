@@ -2,28 +2,32 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
 
-interface User {
-  username: string;
-  email: string;
-  password: string;
+import { User } from '../models/user';
+
+interface Idecode extends jwt.JwtPayload {
+  user?: User;
+  iat: number;
+  exp: number;
 }
 
-interface UserRequest extends Request {
-  user: User;
-}
+export default (req: Request, res: Response, next: any) => {
+  let token = req.header('authorization');
+  if (token) {
+    token = token.split(' ')[1];
+  } else {
+    return res.status(401).json({ message: 'Auth Error' });
+  }
+  try {
+    const decoded: Idecode = <Idecode>jwt.verify(token, 'randomString');
+    req.user = {
+      id: decoded.user?.id,
+      username: decoded.user?.username,
+      email: decoded.user?.email,
+    };
 
-export default {
-  function(req: UserRequest, res: Response, next: any) {
-    const token = req.header('token');
-    if (!token) return res.status(401).json({ message: 'Auth Error' });
-
-    try {
-      const decoded = jwt.verify(token, 'randomString');
-      req.user = <User>decoded;
-      next();
-    } catch (e) {
-      console.error(e);
-      res.status(500).send({ message: 'Invalid Token' });
-    }
-  },
+    next();
+  } catch (e) {
+    console.error(e);
+    res.status(500).send({ message: 'Invalid Token' });
+  }
 };
