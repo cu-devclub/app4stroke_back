@@ -86,13 +86,13 @@ export default {
       });
       if (!user)
         return res.status(400).json({
-          message: 'User Not Exist',
+          message: 'Username or Password is Incorrect',
         });
 
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch)
         return res.status(400).json({
-          message: 'Incorrect Password !',
+          message: 'Username or Password is Incorrect',
         });
 
       const payload = {
