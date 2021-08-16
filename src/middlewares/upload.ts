@@ -1,8 +1,8 @@
-import util from "util";
-import multer from "multer";
+import util from 'util';
+import multer from 'multer';
 
-let processFile = multer().single("file");
+const processFile = multer().single('file');
 
-let processFileMiddleware = util.promisify(processFile);
+const processFileMiddleware = util.promisify(processFile);
 
 export default processFileMiddleware;
