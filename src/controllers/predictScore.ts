@@ -83,6 +83,18 @@ const PredictScore = async (req: Request, res: Response) => {
 
     res.json(postPredictScore.data);
   } catch (e: any) {
+    if (e.response) {
+      console.log('response', e.response);
+    } else if (e.request) {
+      // The request was made but no response was received
+      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+      // http.ClientRequest in node.js
+      console.log('request', e.request);
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      console.log('Error', e.message);
+    }
+
     if (e.code === 'ECONNREFUSED') {
       res.status(500).send(httpError(500, e.message));
     } else if (e.name == 'ValidationError') {
