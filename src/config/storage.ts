@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import httpError from '../errorHandler/httpError/httpError';
 
 import { format } from "util";
 import processFile from "../middlewares/upload";
@@ -12,9 +13,7 @@ export default {
             await processFile(req, res);
         
             if (!req.file) {
-                return res.status(400).send({
-                    message: "Please upload a file!"
-                });
+                return res.status(400).send(httpError(400, "Please upload a file!"));
             }
 
             const blob = bucket.file(req.file.originalname);
@@ -23,9 +22,7 @@ export default {
             });
 
             blobStream.on("error", (err) => {
-                res.status(500).send({
-                    message: err.message
-                });
+                res.status(500).send(httpError(500, err.message));
             });
 
             blobStream.on("finish", (data: any) => {
@@ -40,9 +37,7 @@ export default {
             blobStream.end(req.file.buffer);
 
         } catch (err) {
-            res.status(500).send({
-                message: "Could not upload the file.",
-            });
+            res.status(500).send(httpError(500, "Could not upload the file."));
         }
     },
     imageLister: async(req: Request, res: Response) => {
@@ -59,9 +54,7 @@ export default {
 
             res.status(200).send(fileInfos);
         } catch (err) {
-            res.status(500).send({
-                message: "Unable to read list of files!",
-            });
+            res.status(500).send(httpError(500, "Unable to read list of files!"));
         }
     },
     imageAccessor: async(fileUrl: string, req: Request, res: Response) => {
@@ -77,9 +70,7 @@ export default {
                 });
 
         } catch (err) {
-            res.status(404).send({
-                success: false
-            });
+            res.status(404).send(httpError(404, "Fail"));
         }
     }
 }
