@@ -1,5 +1,10 @@
+import axios from 'axios';
 import { Request, Response } from 'express';
 import Joi from 'joi';
+import httpError from '../errorHandler/httpError/httpError';
+import mapFrontToMl from '../middlewares/mapFrontToMl';
+import { insertFront } from '../middlewares/patient';
+import { insertPredict, updatePredict } from '../middlewares/predict';
 
 const frontDataSchema = Joi.object({
   PatientInformation: Joi.object({
@@ -10,13 +15,13 @@ const frontDataSchema = Joi.object({
     gender: Joi.string().required(),
     arrivalDate: Joi.string().required(),
     arrivalTime: Joi.string().required(),
+    onset: Joi.string().required(),
     clearDate: Joi.string().required(),
     clearTime: Joi.string().required(),
     lastDate: Joi.string().required(),
     lastTime: Joi.string().required(),
     firstDate: Joi.string().required(),
     firstTime: Joi.string().required(),
-    onset: Joi.string().required(),
   }).required(),
   ChiefComplaint: Joi.object({
     timeCourse: Joi.string().required(),
@@ -83,7 +88,40 @@ const frontDataSchema = Joi.object({
 });
 
 const submitPatient = async (req: Request, res: Response) => {
-  const front = frontDataSchema.validateAsync(req.body);
+  try {
+    const data = await frontDataSchema.validateAsync(req.body);
+    const upload = await axios({ url: '/api/files/upload', data: req.files });
+    const patient = await insertFront('Author', data, upload.data.url);
+    const mlAnalyse = await axios({ url: '/', data: [upload.data.url] });
+    const predict = await insertPredict(patient.data.testID);
+    const mlPredict = await axios({
+      url: '/',
+      data: {
+        ...mapFrontToMl(req.body),
+        max_ct_score: mlAnalyse.data.max_ct_score,
+      },
+    });
+    const updatePredictCollect = await updatePredict(
+      patient.data.testID,
+      mlPredict.data,
+    );
+  } catch (e: any) {
+    if (e.response) {
+      console.log('response', e.response);
+    } else if (e.request) {
+      console.log('request', e.request);
+    } else {
+      console.log('Error', e.message);
+    }
+
+    if (e.code === 'ECONNREFUSED') {
+      res.status(500).send(httpError(500, e.message));
+    } else if (e.name == 'ValidationError') {
+      res.status(400).send(httpError(400, e.details[0].message));
+    } else {
+      res.status(0).send('Unknown Error');
+    }
+  }
 };
 
 export default submitPatient;
