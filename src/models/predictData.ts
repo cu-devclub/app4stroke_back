@@ -1,10 +1,5 @@
 import mongoose from 'mongoose';
 
-const uri =
-  'mongodb+srv://root:qLUlc1U7tfJOjMcd@cluster0.ab6gl.mongodb.net/stroke';
-
-mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-
 export interface predict {
   totalSlices: String;
   maxScoreSlice: String;
