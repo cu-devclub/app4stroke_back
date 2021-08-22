@@ -1,14 +1,14 @@
 import BaseError from './baseError';
-import httpStatusCode from './httpStatusCode';
+import { httpStatusCode } from './httpStatus';
 
-class NotFoundError extends BaseError{
+class NotFoundError extends BaseError {
   constructor(
-    description: string,
+    description: string | undefined,
     name = 'Not Found',
-    statusCode = httpStatusCode.NOT_FOUND
-  ){
+    statusCode = httpStatusCode.NOT_FOUND,
+  ) {
     super(name, statusCode, description);
-  };
-};
+  }
+}
 
 export default NotFoundError;

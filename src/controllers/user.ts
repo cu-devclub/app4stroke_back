@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const User = mongoose.model('User');
 
 import { Request, Response } from 'express';
+import httpError from '../errorHandler/httpError/httpError';
 
 export default {
     getUser: (req: Request, res: Response): void => {
@@ -23,7 +24,7 @@ export default {
                 });
             }
             else {
-                console.log('Error in retrieving user list :' + err);
+                res.status(500).send(httpError(500, "Error in retrieving user list: " + err));
             }
         });
     },
@@ -42,7 +43,9 @@ export default {
             if (!err) {
                 res.redirect('/list');
             }
-            else { console.log('Error in user delete :' + err); }
+            else {
+                res.status(500).send(httpError(500, "Error in deleting user: " + err));
+            }
         });
     }
 };
@@ -63,8 +66,9 @@ function insertRecord(req: Request, res: Response) {
                     user: req.body
                 });
             }
-            else
-                console.log('Error during record insertion : ' + err);
+            else {
+                res.status(500).send(httpError(500, "Error in inserting record: " + err));
+            }
         }
     });
 }
@@ -80,8 +84,9 @@ function updateRecord(req: Request, res: Response) {
                     user: req.body
                 });
             }
-            else
-                console.log('Error during record update : ' + err);
+            else {
+                res.status(500).send(httpError(500, "Error in updating record: " + err));
+            }
         }
     });
 }

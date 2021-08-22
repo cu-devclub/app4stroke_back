@@ -1,14 +1,14 @@
-import BaseError from "./baseError";
-import httpStatusCode from "./httpStatusCode";
+import BaseError from './baseError';
+import { httpStatusCode } from './httpStatus';
 
-class InternalServerError extends BaseError{
+class InternalServerError extends BaseError {
   constructor(
-    description: string,
+    description: string | undefined,
     name = 'internal server error',
-    statusCode = httpStatusCode.INTERNAL_SERVER_ERROR
-  ){
+    statusCode = httpStatusCode.INTERNAL_SERVER_ERROR,
+  ) {
     super(name, statusCode, description);
-  };
-};
+  }
+}
 
 export default InternalServerError;
