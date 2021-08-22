@@ -5,6 +5,22 @@ const uri =
 
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
+export interface predict {
+  totalSlices: String;
+  maxScoreSlice: String;
+  maxCtScore: String;
+  imgPath: Array<string>;
+  heatmapPath: Array<string>;
+  ctScores: Array<number>;
+  prop: Number;
+  topPosFactors: Array<string>;
+  topPosValues: Array<string>;
+  topPosImpacts: Array<number>;
+  topNegFactors: Array<string>;
+  topNegValues: Array<string>;
+  topNegImpacts: Array<number>;
+}
+
 const predictSchema = new mongoose.Schema({
   totalSlices: { type: String, default: '' },
   maxScoreSlice: { type: String, default: '' },
