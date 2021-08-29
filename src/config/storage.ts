@@ -1,76 +1,66 @@
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
 import httpError from '../errorHandler/httpError/httpError';
+import s3 from '../config/s3';
+import dotenv from 'dotenv';
 
-import { format } from "util";
-import processFile from "../middlewares/upload";
-import { Storage } from "@google-cloud/storage";
-const storage = new Storage({ keyFilename: "google-cloud-key.json" });
-const bucket = storage.bucket("stroke_images_2");
-
+dotenv.config();
+const bucketName = "c4ab726d-2d35-448c-8352-93f18fdbcd62";
+ 
 export default {
-    imageSender: async(req: Request, res: Response) => {
+    fileSender: async(req: Request, res: Response) => {
         try {
-            await processFile(req, res);
-        
             if (!req.file) {
                 return res.status(400).send(httpError(400, "Please upload a file!"));
             }
-
-            const blob = bucket.file(req.file.originalname);
-            const blobStream = blob.createWriteStream({
-                resumable: false,
+            const params = {
+                Bucket: bucketName,
+                Key: req.params.foldername + "/" + req.file.originalname,
+                Body: req.file.buffer
+            }
+            
+            s3.upload(params, (err: any, data: any) => {
+                if (err) {
+                    res.status(500).send(httpError(500, "Error: " + err));
+                }
+                res.send("File uploaded successfully!");
             });
-
-            blobStream.on("error", (err) => {
-                res.status(500).send(httpError(500, err.message));
-            });
-
-            blobStream.on("finish", (data: any) => {
-                const url = format(`https://storage.googleapis.com/${bucket.name}/${blob.name}`);
-
-                res.status(200).send({
-                    message: "Uploaded the file successfully!",
-                    url: url,
-                });
-            })
-
-            blobStream.end(req.file.buffer);
-
         } catch (err) {
             res.status(500).send(httpError(500, "Could not upload the file."));
         }
     },
-    imageLister: async(req: Request, res: Response) => {
+    fileLister: async(req: Request, res: Response) => {
         try {
-            const [files] = await bucket.getFiles();
-            let fileInfos: any = [];
-
-            files.forEach((file) => {
-                fileInfos.push({
-                    name: file.name,
-                    url: file.metadata.mediaLink,
-                });
+            const params = {
+                Bucket: bucketName
+            }
+    
+            const keys: any = [];
+            s3.listObjectsV2(params, (err, data) => {
+                if (err) {
+                    res.status(500).send(httpError(500, "Error: "+ err));
+                }
+                res.status(200).send(data);
             });
-
-            res.status(200).send(fileInfos);
         } catch (err) {
             res.status(500).send(httpError(500, "Unable to read list of files!"));
         }
     },
-    imageAccessor: async(fileUrl: string, req: Request, res: Response) => {
+    fileAccessor: async(req: Request, res: Response) => {
         try {
-            const file = bucket.file(fileUrl);
-            const readStream = file.createReadStream();
-
-            await file
-                .getMetadata()
-                .then((metadata) => {
-                    res.setHeader("content-type", metadata[0].contentType);
-                    readStream.pipe(res);
-                });
-
+            const params = {
+                Bucket: bucketName,
+                Key: req.params.foldername + "/" + req.params.filename
+            }
+    
+            res.setHeader('Content-Disposition', 'attachment');
+    
+            s3.getObject(params)
+                .createReadStream()
+                    .on('error', function(err){
+                        res.status(500).send(httpError(500, "Error: " + err));
+                }).pipe(res);
         } catch (err) {
-            res.status(404).send(httpError(404, "Fail"));
+            res.status(404).send(httpError(404, "Fail."));
         }
     }
 }
