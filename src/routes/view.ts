@@ -3,6 +3,6 @@ import view from '../controllers/view';
 
 const router = Router();
 
-router.get('/view', view);
+router.get('/view/:id', view);
 
 export default router;

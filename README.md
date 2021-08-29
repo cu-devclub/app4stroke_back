@@ -21,7 +21,7 @@ Api Documentation for you
 ## patient
 
 - [submit patient]() : `POST /api/submitPatient`
-- [view]() : `GET /api/{id}`
+- [view]() : `GET /api/view/{id}`
 -
 
 # Error handler
