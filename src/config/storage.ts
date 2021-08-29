@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import httpError from '../errorHandler/httpError/httpError';
 import s3 from '../config/s3';
 import dotenv from 'dotenv';
@@ -7,23 +7,12 @@ dotenv.config();
 const bucketName = "c4ab726d-2d35-448c-8352-93f18fdbcd62";
  
 export default {
-    fileSender: async(req: Request, res: Response) => {
+    fileSender: async(req: Request, res: Response, next: NextFunction) => {
         try {
-            if (!req.file) {
+            if (!req.files) {
                 return res.status(400).send(httpError(400, "Please upload a file!"));
             }
-            const params = {
-                Bucket: bucketName,
-                Key: req.params.foldername + "/" + req.file.originalname,
-                Body: req.file.buffer
-            }
-            
-            s3.upload(params, (err: any, data: any) => {
-                if (err) {
-                    res.status(500).send(httpError(500, "Error: " + err));
-                }
-                res.send("File uploaded successfully!");
-            });
+            res.status(200).send("File was uploaded succesfully!");
         } catch (err) {
             res.status(500).send(httpError(500, "Could not upload the file."));
         }

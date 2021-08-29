@@ -4,7 +4,7 @@ import fileController from '../controllers/file';
 
 const router = Router();
 
-router.post('/upload/:foldername?', upload.single("file"), fileController.upload);
+router.post('/upload/:foldername?', upload.array("files"), fileController.upload);
 router.get('/', fileController.getFileNames);
 router.get('/:foldername?/:filename', fileController.download);
  

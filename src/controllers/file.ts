@@ -1,12 +1,12 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import httpError from '../errorHandler/httpError/httpError';
 
 import storage from "../config/storage";
 
 export default {
-    upload: async(req: Request, res: Response) => {
+    upload: async(req: Request, res: Response, next: NextFunction) => {
         try {
-            await storage.fileSender(req, res);
+            await storage.fileSender(req, res, next);
         } catch (err) {
             res.status(500).send(httpError(500, "Could not upload the file. " + err));
         }
