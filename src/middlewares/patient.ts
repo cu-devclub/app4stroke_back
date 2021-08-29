@@ -47,9 +47,3 @@ const findFront = async (testID: number) => {
 };
 
 export { insertFront, countFront, findFront };
-
-const test = async () => {
-  console.log(await findFront(1));
-};
-
-// test();
