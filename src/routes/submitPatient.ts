@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import submitPatient from '../controllers/submitPatient';
 import multer from 'multer';
-const upload = multer({ dest: 'temp/' });
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 const router = Router();
 
