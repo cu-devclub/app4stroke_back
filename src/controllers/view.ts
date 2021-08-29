@@ -11,7 +11,7 @@ const schema = Joi.object({
 
 const view = async (req: Request, res: Response) => {
   try {
-    const data = await schema.validateAsync(req.body);
+    const data = await schema.validateAsync(req.params);
 
     const info = await findInfo(data.id);
     const predict = await findPredict(data.id);
