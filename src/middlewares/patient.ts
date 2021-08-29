@@ -1,24 +1,24 @@
 import httpError from '../errorHandler/httpError/httpError';
-import frontData, { front } from '../models/frontData';
+import informationData, { info } from '../models/infoData';
 
-export interface insertFrontResult {
+export interface insertInfoResult {
   success: Boolean;
   data: Object;
 }
 
-const insertFront = async (
+const insertInfo = async (
   author: string,
-  data: front,
+  data: info,
   imgPath: Array<string>,
-): Promise<insertFrontResult | any> => {
+): Promise<insertInfoResult | any> => {
   try {
-    const count = await countFront();
+    const count = await countInfo();
     if (count instanceof Error) {
       throw count;
     }
     return {
       success: true,
-      data: await new frontData({
+      data: await new informationData({
         ...data,
         author: author,
         imgPath: imgPath,
@@ -30,20 +30,20 @@ const insertFront = async (
   }
 };
 
-const countFront = async () => {
+const countInfo = async () => {
   try {
-    return await frontData.countDocuments();
+    return await informationData.countDocuments();
   } catch (e: any) {
     return httpError(500, `DB: Can't count ${e.toString()}`);
   }
 };
 
-const findFront = async (testID: number) => {
+const findInfo = async (testID: number) => {
   try {
-    return await frontData.find({ testID: testID });
+    return await informationData.find({ testID: testID });
   } catch (e: any) {
     return httpError(500, `DB: Can't Find ${e.toString()}`);
   }
 };
 
-export { insertFront, countFront, findFront };
+export { insertInfo, countInfo, findInfo };

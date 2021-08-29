@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import Joi from 'joi';
 import httpError from '../errorHandler/httpError/httpError';
 import mapFrontToMl from '../middlewares/mapFrontToMl';
-import { insertFront } from '../middlewares/patient';
+import { insertInfo } from '../middlewares/patient';
 import { insertPredict, updatePredict } from '../middlewares/predict';
 import BaseError from '../errorHandler/httpError/Component/baseError';
 
@@ -114,7 +114,7 @@ const submitPatient = async (req: Request, res: Response) => {
       throw httpError(400, 'please upload file;\n file is required');
     }
 
-    const patient = await insertFront('Author', data, path);
+    const patient = await insertInfo('Author', data, path);
     const predict = await insertPredict(patient.data.testID);
 
     const mlAnalyse = await axios({

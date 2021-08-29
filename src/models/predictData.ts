@@ -34,4 +34,4 @@ const predictSchema = new mongoose.Schema({
   testID: { type: Number, required: true },
 });
 
-export default mongoose.model('predictData', predictSchema);
+export default mongoose.model('predict', predictSchema);

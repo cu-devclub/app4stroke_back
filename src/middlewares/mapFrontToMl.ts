@@ -1,6 +1,6 @@
-import { front } from '../models/frontData';
+import { info } from '../models/infoData';
 
-export default (body: front) => {
+export default (body: info) => {
   return {
     age: body.PatientInformation.age,
     arrival_date: body.PatientInformation.arrivalDate,

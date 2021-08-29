@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-export interface front {
+export interface info {
   PatientInformation: {
     patientID: number;
     age: number;
@@ -81,7 +81,7 @@ export interface front {
   };
 }
 
-const frontSchema = new mongoose.Schema({
+const infoSchema = new mongoose.Schema({
   PatientInformation: {
     patientID: { type: Number, required: true },
     age: { type: Number, required: true },
@@ -166,4 +166,4 @@ const frontSchema = new mongoose.Schema({
   testID: { type: Number, required: true },
 });
 
-export default mongoose.model('frontData', frontSchema);
+export default mongoose.model('information', infoSchema);
