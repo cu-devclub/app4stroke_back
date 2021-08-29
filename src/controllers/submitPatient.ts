@@ -5,6 +5,7 @@ import httpError from '../errorHandler/httpError/httpError';
 import mapFrontToMl from '../middlewares/mapFrontToMl';
 import { insertFront } from '../middlewares/patient';
 import { insertPredict, updatePredict } from '../middlewares/predict';
+import BaseError from '../errorHandler/httpError/Component/baseError';
 
 const frontDataSchema = Joi.object({
   PatientInformation: Joi.object({
@@ -90,37 +91,80 @@ const frontDataSchema = Joi.object({
 const submitPatient = async (req: Request, res: Response) => {
   try {
     const data = await frontDataSchema.validateAsync(req.body);
-    const upload = await axios({ url: '/api/files/upload', data: req.files });
-    const patient = await insertFront('Author', data, upload.data.url);
-    const mlAnalyse = await axios({ url: '/', data: [upload.data.url] });
+
+    const path: Array<string> = [];
+    if (req.files && req.files instanceof Array) {
+      req.files.forEach(async (file) => {
+        const upload = await axios({
+          headers: {
+            Authorization:
+              'Bearer ya29.c.KqYBDgg829Qewovd64HMm5d7eeY_u-aO-4Vwfsi4ClGhqVDuP_4tLFxJqtROk7Ou1gLuyR3bzAbniNPYt7VN8fYd3WG4lGRlmz71b27fMqgeRNfP0PqU9u7ahPdPDlRcUT23tje3E7kbkS1smMJ_p7iyKW07cFvrragGe7Z4haiYaXxGyI1xBAq3BldNPZYpPkkovmGUyKnXUmLgQtwmFxYf9fUN5bahLA',
+            'Content-Type': 'multipart/form-data',
+          },
+          url: 'http://localhost:3000/api/files/upload',
+          data: {
+            file: file.buffer,
+          },
+          method: 'post',
+        });
+
+        path.push(upload.data.url);
+      });
+    } else {
+      throw httpError(400, 'please upload file;\n file is required');
+    }
+
+    const patient = await insertFront('Author', data, path);
     const predict = await insertPredict(patient.data.testID);
+
+    const mlAnalyse = await axios({
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      url: 'http://13.229.148.14:9898/api/analyse_dicom/',
+      data: {
+        dicom_paths: path,
+      },
+      method: 'POST',
+    });
+
     const mlPredict = await axios({
-      url: '/',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      url: 'http://13.229.148.14:9898/api/predict_prob/',
       data: {
         ...mapFrontToMl(req.body),
         max_ct_score: mlAnalyse.data.max_ct_score,
       },
+      method: 'POST',
     });
-    const updatePredictCollect = await updatePredict(
-      patient.data.testID,
-      mlPredict.data,
-    );
-  } catch (e: any) {
-    if (e.response) {
-      console.log('response', e.response);
-    } else if (e.request) {
-      console.log('request', e.request);
-    } else {
-      console.log('Error', e.message);
-    }
 
-    if (e.code === 'ECONNREFUSED') {
-      res.status(500).send(httpError(500, e.message));
-    } else if (e.name == 'ValidationError') {
-      res.status(400).send(httpError(400, e.details[0].message));
-    } else {
-      res.status(0).send('Unknown Error');
+    await updatePredict(patient.data.testID, mlPredict.data);
+
+    res.status(200).send({
+      statusCode: 200,
+      statusText: 'SUCCESS',
+      description:
+        'Create data on BD success \n predict data will update in 2-3 minutes',
+      data: {
+        request: patient,
+        predict: predict,
+      },
+    });
+  } catch (e: any) {
+    if (e instanceof BaseError) {
+      res.status(e.statusCode).send(e);
+    } else if (e instanceof Joi.ValidationError) {
+      res.status(400).send(httpError(400, `${e.name}:${e.message}`));
     }
+    // if (e.code === 'ECONNREFUSED') {
+    //   res.status(500).send(httpError(500, e.message));
+    // } else if (e.name == 'ValidationError') {
+    //   res.status(400).send(httpError(400, e.details[0].message));
+    // } else {
+    //   res.status(0).send('Unknown Error');
+    // }
   }
 };
 
