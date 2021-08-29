@@ -1,7 +1,8 @@
+import dotenv from 'dotenv';
 import { Request, Response, NextFunction } from 'express';
 import httpError from '../errorHandler/httpError/httpError';
+
 import s3 from '../config/s3';
-import dotenv from 'dotenv';
 
 dotenv.config();
 const bucketName = "c4ab726d-2d35-448c-8352-93f18fdbcd62";
@@ -12,9 +13,9 @@ export default {
             if (!req.files) {
                 return res.status(400).send(httpError(400, "Please upload a file!"));
             }
-            res.status(200).send("File was uploaded succesfully!");
+            res.status(200).send("The file was uploaded succesfully!");
         } catch (err) {
-            res.status(500).send(httpError(500, "Could not upload the file."));
+            res.status(500).send(httpError(500, "The file could not be uploaded."));
         }
     },
     fileLister: async(req: Request, res: Response) => {
@@ -22,7 +23,6 @@ export default {
             const params = {
                 Bucket: bucketName
             }
-    
             const keys: any = [];
             s3.listObjectsV2(params, (err, data) => {
                 if (err) {
@@ -31,7 +31,7 @@ export default {
                 res.status(200).send(data);
             });
         } catch (err) {
-            res.status(500).send(httpError(500, "Unable to read list of files!"));
+            res.status(500).send(httpError(500, "The list of files could not be read."));
         }
     },
     fileAccessor: async(req: Request, res: Response) => {
@@ -49,7 +49,7 @@ export default {
                         res.status(500).send(httpError(500, "Error: " + err));
                 }).pipe(res);
         } catch (err) {
-            res.status(404).send(httpError(404, "Fail."));
+            res.status(404).send(httpError(404, "The file could not be accessed."));
         }
     }
 }

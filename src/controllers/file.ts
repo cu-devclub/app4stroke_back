@@ -8,21 +8,21 @@ export default {
         try {
             await storage.fileSender(req, res, next);
         } catch (err) {
-            res.status(500).send(httpError(500, "Could not upload the file. " + err));
+            res.status(500).send(httpError(500, "The file could not be uploaded. " + err));
         }
     },
     getFileNames: async(req: Request, res: Response) => {
         try {
             await storage.fileLister(req, res);
         } catch (err) {
-            res.status(500).send(httpError(500, "Unable to read list of files!"));
+            res.status(500).send(httpError(500, "The list of files could not be read. " + err));
         }
     },
     download: async(req: Request, res: Response) => {
         try {
             await storage.fileAccessor(req, res);
         } catch (err) {
-            res.status(500).send(httpError(500, "Could not download the file. " + err));
+            res.status(500).send(httpError(500, "The file could not be downloaded. " + err));
         }
     }
 }

@@ -7,8 +7,9 @@ const upload = multer({
     storage: multerS3({
         s3: s3,
         bucket: 'c4ab726d-2d35-448c-8352-93f18fdbcd62',
-        key: function (_req: any, file: any, cb: any) {
-            cb(null, file.originalname);
+        key: function (req: any, file: any, cb: any) {
+            const fullPath = req.params.foldername + '/' + file.originalname;
+            cb(null, fullPath);
         }
     })
 });
