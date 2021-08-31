@@ -9,23 +9,23 @@ import BaseError from '../errorHandler/httpError/Component/baseError';
 
 const frontDataSchema = Joi.object({
   PatientInformation: Joi.object({
-    patientID: Joi.any().required(),
+    patientID: Joi.number().required(),
     age: Joi.number().required(),
-    firstName: Joi.string().required(),
-    lastName: Joi.string().required(),
-    gender: Joi.string().required(),
-    arrivalDate: Joi.string().required(),
-    arrivalTime: Joi.string().required(),
-    onset: Joi.string().required(),
-    clearDate: Joi.string().required(),
-    clearTime: Joi.string().required(),
-    lastDate: Joi.string().required(),
-    lastTime: Joi.string().required(),
-    firstDate: Joi.string().required(),
-    firstTime: Joi.string().required(),
+    firstName: Joi.string().required().allow(''),
+    lastName: Joi.string().required().allow(''),
+    gender: Joi.string().required().allow(''),
+    arrivalDate: Joi.string().required().allow(''),
+    arrivalTime: Joi.string().required().allow(''),
+    onset: Joi.string().required().allow(''),
+    clearDate: Joi.string().required().allow(''),
+    clearTime: Joi.string().required().allow(''),
+    lastDate: Joi.string().required().allow(''),
+    lastTime: Joi.string().required().allow(''),
+    firstDate: Joi.string().required().allow(''),
+    firstTime: Joi.string().required().allow(''),
   }).required(),
   ChiefComplaint: Joi.object({
-    timeCourse: Joi.string().required(),
+    timeCourse: Joi.string().required().allow(''),
     alterationOfConsciousness: Joi.boolean().required(),
     facialWeakness: Joi.boolean().required(),
     facialWeaknessLeft: Joi.boolean().required(),
@@ -42,7 +42,7 @@ const frontDataSchema = Joi.object({
     vertigo: Joi.boolean().required(),
     visualProblem: Joi.boolean().required(),
     other: Joi.boolean().required(),
-    otherText: Joi.string().required(),
+    otherText: Joi.string().required().allow(''),
   }).required(),
   Underlying: Joi.object({
     deny: Joi.boolean().required(),
@@ -60,15 +60,15 @@ const frontDataSchema = Joi.object({
     obesity: Joi.boolean().required(),
     smoking: Joi.boolean().required(),
     other: Joi.boolean().required(),
-    otherText: Joi.string().required(),
+    otherText: Joi.string().required().allow(''),
   }).required(),
   VitalSigns: Joi.object({
     systolicBP: Joi.number().required(),
     diastolicBP: Joi.number().required(),
     heartRate: Joi.number().required(),
-    buttonHeartRate: Joi.string().required(),
+    buttonHeartRate: Joi.string().required().allow(''),
   }).required(),
-  EKG12Leads: Joi.string().required(),
+  EKG12Leads: Joi.string().required().allow(''),
   NIHSS: Joi.object({
     levelOfConsciousness: Joi.number().required(),
     twoQuestions: Joi.number().required(),
@@ -108,7 +108,7 @@ const submitPatient = async (req: Request, res: Response) => {
           method: 'post',
         });
 
-        path.push(upload.data.url);
+        path.push(upload.data.path);
       });
     } else {
       throw httpError(400, 'please upload file;\n file is required');
@@ -145,8 +145,7 @@ const submitPatient = async (req: Request, res: Response) => {
     res.status(200).send({
       statusCode: 200,
       statusText: 'SUCCESS',
-      description:
-        'Create data on BD success \n predict data will update in 2-3 minutes',
+      description: 'submit success',
       data: {
         request: patient,
         predict: predict,
