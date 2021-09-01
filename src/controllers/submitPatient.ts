@@ -4,7 +4,11 @@ import Joi from 'joi';
 import httpError from '../errorHandler/httpError/httpError';
 import mapFrontToMl from '../middlewares/mapFrontToMl';
 import { insertInfo } from '../middlewares/patient';
-import { insertPredict, updatePredict } from '../middlewares/predict';
+import {
+  findPredict,
+  insertPredict,
+  updatePredict,
+} from '../middlewares/predict';
 import BaseError from '../errorHandler/httpError/Component/baseError';
 
 const frontDataSchema = Joi.object({
@@ -140,15 +144,23 @@ const submitPatient = async (req: Request, res: Response) => {
       method: 'POST',
     });
 
-    await updatePredict(patient.data.testID, mlPredict.data);
+    await updatePredict(patient.data.testID, {
+      ...mlPredict.data,
+      total_slices: mlAnalyse.data.total_slices,
+      max_score_slice: mlAnalyse.data.max_score_slice,
+      max_ct_score: mlAnalyse.data.max_ct_score,
+      imgPath: [],
+      heatmapPath: [],
+      ctScores: [],
+    });
 
     res.status(200).send({
       statusCode: 200,
       statusText: 'SUCCESS',
       description: 'submit success',
       data: {
-        request: patient,
-        predict: predict,
+        request: patient.data,
+        predict: await findPredict(patient.data.testID),
       },
     });
   } catch (e: any) {
@@ -156,6 +168,11 @@ const submitPatient = async (req: Request, res: Response) => {
       res.status(e.statusCode).send(e);
     } else if (e instanceof Joi.ValidationError) {
       res.status(400).send(httpError(400, `${e.name}:${e.message}`));
+    } else {
+      res.json({
+        status: 'unknow',
+        error: e,
+      });
     }
     // if (e.code === 'ECONNREFUSED') {
     //   res.status(500).send(httpError(500, e.message));
