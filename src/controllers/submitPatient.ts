@@ -94,9 +94,14 @@ const frontDataSchema = Joi.object({
 
 const submitPatient = async (req: Request, res: Response) => {
   try {
+    // validate incoming request body
     const data = await frontDataSchema.validateAsync(req.body);
 
+    // create const path collect path
     const path: Array<string> = [];
+
+    // Loop upload and append path to const path
+    // check file as array
     if (req.files && req.files instanceof Array) {
       req.files.forEach(async (file) => {
         const upload = await axios({
@@ -118,9 +123,18 @@ const submitPatient = async (req: Request, res: Response) => {
       throw httpError(400, 'please upload file;\n file is required');
     }
 
+    // Insert template data to DB
     const patient = await insertInfo('Author', data, path);
     const predict = await insertPredict(patient.data.testID);
 
+    // If insert error
+    if (patient instanceof BaseError) {
+      throw patient;
+    } else if (predict instanceof BaseError) {
+      throw predict;
+    }
+
+    // POST to ML
     const mlAnalyse = await axios({
       headers: {
         'Content-Type': 'application/json',
@@ -144,6 +158,8 @@ const submitPatient = async (req: Request, res: Response) => {
       method: 'POST',
     });
 
+    // TODO: base64 to img and upload to Cloud
+
     await updatePredict(patient.data.testID, {
       ...mlPredict.data,
       total_slices: mlAnalyse.data.total_slices,
@@ -159,7 +175,7 @@ const submitPatient = async (req: Request, res: Response) => {
       statusText: 'SUCCESS',
       description: 'submit success',
       data: {
-        request: patient.data,
+        information: patient.data,
         predict: await findPredict(patient.data.testID),
       },
     });
