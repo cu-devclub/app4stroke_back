@@ -10,6 +10,7 @@ import {
   updatePredict,
 } from '../middlewares/predict';
 import BaseError from '../errorHandler/httpError/Component/baseError';
+import base64toImg from '../middlewares/base64toImg';
 
 const frontDataSchema = Joi.object({
   PatientInformation: Joi.object({
@@ -19,14 +20,14 @@ const frontDataSchema = Joi.object({
     lastName: Joi.string().required().allow(''),
     gender: Joi.string().required().allow(''),
     arrivalDate: Joi.string().required().allow(''),
-    arrivalTime: Joi.string().required().allow(''),
+    // arrivalTime: Joi.string().required().allow(null),
     onset: Joi.string().required().allow(''),
-    clearDate: Joi.string().required().allow(''),
-    clearTime: Joi.string().required().allow(''),
-    lastDate: Joi.string().required().allow(''),
-    lastTime: Joi.string().required().allow(''),
-    firstDate: Joi.string().required().allow(''),
-    firstTime: Joi.string().required().allow(''),
+    clearDate: Joi.string().required().allow(null),
+    // clearTime: Joi.string().required().allow(null),
+    lastDate: Joi.string().required().allow(null),
+    // lastTime: Joi.string().required().allow(null),
+    firstDate: Joi.string().required().allow(null),
+    // firstTime: Joi.string().required().allow(null),
   }).required(),
   ChiefComplaint: Joi.object({
     timeCourse: Joi.string().required().allow(''),
@@ -152,14 +153,21 @@ const submitPatient = async (req: Request, res: Response) => {
       },
       url: 'http://13.229.148.14:9898/api/predict_prob/',
       data: {
-        ...mapFrontToMl(req.body),
+        ...mapFrontToMl(data),
         max_ct_score: mlAnalyse.data.max_ct_score,
       },
       method: 'POST',
     });
 
+    res.json(mlPredict);
+
     // TODO: base64 to img and upload to Cloud
 
+    // mlAnalyse.data.heatmap_bytes.forEach((byte: string) => {
+    //   upload(base64toImg(byte));
+    // });
+
+    // FIXME: path data
     await updatePredict(patient.data.testID, {
       ...mlPredict.data,
       total_slices: mlAnalyse.data.total_slices,
