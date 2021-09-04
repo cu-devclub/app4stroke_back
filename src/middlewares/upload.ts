@@ -1,7 +1,4 @@
-import { Storage } from "@google-cloud/storage";
-const storage = new Storage({ keyFilename: "google-cloud-key.json" });
-const bucket = storage.bucket("stroke_images_3");
-
+import bucket from '../config/storage';
 import path from 'path';
 import FileType from 'file-type';
 
