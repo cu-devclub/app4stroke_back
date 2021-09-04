@@ -1,34 +1,27 @@
 import { Request, Response } from 'express';
+import httpError from '../errorHandler/httpError/httpError';
 
-import storage from '../config/storage';
+import upload from "../middlewares/upload";
+import download from "../middlewares/download";
 
 export default {
-  upload: async (req: Request, res: Response) => {
-    try {
-      await storage.imageSender(req, res);
-    } catch (err) {
-      res.status(500).send({
-        message: 'Could not upload the file. ' + err,
-      });
+    upload: async(req: Request, res: Response) => {
+        try {
+            const base64 = "";
+
+            const URI = await upload(base64, "folder/folder2", "filename");
+
+            res.status(200).send(URI);
+        } catch (err) {
+            res.status(500).send(httpError(500, "Could not upload the file. " + err));
+        }
+    },
+    download: async(req: Request, res: Response) => {
+        try {
+            const filePath = req.params.filePath;
+            await download(`${filePath}`, req, res);
+        } catch (err) {
+            res.status(500).send(httpError(500, "Could not download the file. " + err));
+        }
     }
-  },
-  getFileList: async (req: Request, res: Response) => {
-    try {
-      await storage.imageLister(req, res);
-    } catch (err) {
-      res.status(500).send({
-        message: 'Unable to read list of files!',
-      });
-    }
-  },
-  download: async (req: Request, res: Response) => {
-    try {
-      const fileName = req.params.name;
-      await storage.imageAccessor(`${fileName}`, req, res);
-    } catch (err) {
-      res.status(500).send({
-        message: 'Could not download the file. ' + err,
-      });
-    }
-  },
-};
+}
