@@ -7,9 +7,9 @@ import download from "../middlewares/download";
 export default {
     upload: async(req: Request, res: Response) => {
         try {
-            const base64 = "";
-
-            const URI = await upload(base64, "folder/folder2", "filename");
+            const buffer = "";
+            
+            const URI = await upload(buffer, "ml", "filename");
 
             res.status(200).send(URI);
         } catch (err) {
