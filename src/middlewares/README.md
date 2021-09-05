@@ -9,10 +9,10 @@ import upload from '../middlewares/upload';
 
 ## Usage
 `
-upload(base64, path, name)
+upload(buffer, path, name)
 `
 
-- base64 : string
+- buffer : any
 - path : string
 - name : string (no need for file extension)
 
@@ -20,8 +20,6 @@ upload(base64, path, name)
 ```typescript
 import upload from '../middlewares/upload';
 
-const base64 = "somestring"; // DICOM file
-
-const URI = await upload(base64, "folder1/folder2", "testfile");
-console.log(URI); // gs://stroke_images_3/folder1/folder2/testfile.dcm
+const URI = await upload(buffer, "folder1/folder2", "testfile");
+console.log(URI); // { "url": "https://storage.cloud.google.com/stroke_images_3/folder1/folder2/testfile.ext", "gsutilURI": "gs://stroke_images_3/folder1/folder2/testfile.ext" }
 ```
