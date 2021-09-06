@@ -7,21 +7,23 @@ const upload = async (buffer: any, filePath: string, fileName: string) => {
     ext: 'unknown',
     mime: 'unknown',
   };
-  console.log(mime);
 
   const fullPath = path.join(filePath, fileName + '.' + ext);
   const file = bucket.file(fullPath);
 
-  file.save(buffer, (err: any) => {
-    if (err) {
-      console.log(err);
-    }
+  return new Promise<any>((resolve, reject) => {
+    file
+      .save(buffer)
+      .then(() => {
+        resolve({
+          url: `https://storage.cloud.google.com/stroke_images_3/${fullPath}`,
+          gsutilURI: `gs://stroke_images_3/${fullPath}`,
+        });
+      })
+      .catch(() => {
+        reject({});
+      });
   });
-
-  return {
-    url: `https://storage.cloud.google.com/stroke_images_3/${fullPath}`,
-    gsutilURI: `gs://stroke_images_3/${fullPath}`,
-  };
 };
 
 export default upload;
