@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import Joi from 'joi';
 import httpError from '../errorHandler/httpError/httpError';
 import mapFrontToMl from '../middlewares/mapFrontToMl';
-import { insertInfo } from '../middlewares/patient';
+import { findInfo, insertInfo, updateInfoPath } from '../middlewares/patient';
 import {
   findPredict,
   insertPredict,
@@ -11,121 +11,82 @@ import {
 } from '../middlewares/predict';
 import BaseError from '../errorHandler/httpError/Component/baseError';
 import base64toImg from '../middlewares/base64toImg';
+import upload from '../middlewares/upload';
 
-const frontDataSchema = Joi.object({
-  PatientInformation: Joi.object({
-    patientID: Joi.number().required(),
-    age: Joi.number().required(),
-    firstName: Joi.string().required().allow(''),
-    lastName: Joi.string().required().allow(''),
-    gender: Joi.string().required().allow(''),
-    arrivalDate: Joi.string().required().allow(''),
-    // arrivalTime: Joi.string().required().allow(null),
-    onset: Joi.string().required().allow(''),
-    clearDate: Joi.string().required().allow(null),
-    // clearTime: Joi.string().required().allow(null),
-    lastDate: Joi.string().required().allow(null),
-    // lastTime: Joi.string().required().allow(null),
-    firstDate: Joi.string().required().allow(null),
-    // firstTime: Joi.string().required().allow(null),
-  }).required(),
-  ChiefComplaint: Joi.object({
-    timeCourse: Joi.string().required().allow(''),
-    alterationOfConsciousness: Joi.boolean().required(),
-    facialWeakness: Joi.boolean().required(),
-    facialWeaknessLeft: Joi.boolean().required(),
-    facialWeaknessRight: Joi.boolean().required(),
-    hemiparesis: Joi.boolean().required(),
-    hemiparesisLeft: Joi.boolean().required(),
-    hemiparesisRight: Joi.boolean().required(),
-    hemiparesthesia: Joi.boolean().required(),
-    hemiparesthesiaLeft: Joi.boolean().required(),
-    hemiparesthesiaRight: Joi.boolean().required(),
-    dysarthria: Joi.boolean().required(),
-    aphasia: Joi.boolean().required(),
-    ataxia: Joi.boolean().required(),
-    vertigo: Joi.boolean().required(),
-    visualProblem: Joi.boolean().required(),
-    other: Joi.boolean().required(),
-    otherText: Joi.string().required().allow(''),
-  }).required(),
-  Underlying: Joi.object({
-    deny: Joi.boolean().required(),
-    hx: Joi.boolean().required(),
-    previousTia: Joi.boolean().required(),
-    previousStroke: Joi.boolean().required(),
-    ht: Joi.boolean().required(),
-    dm: Joi.boolean().required(),
-    dlp: Joi.boolean().required(),
-    valvularHeartDisease: Joi.boolean().required(),
-    af: Joi.boolean().required(),
-    coronaryHeartDisease: Joi.boolean().required(),
-    ckd: Joi.boolean().required(),
-    peripheralArterialDisease: Joi.boolean().required(),
-    obesity: Joi.boolean().required(),
-    smoking: Joi.boolean().required(),
-    other: Joi.boolean().required(),
-    otherText: Joi.string().required().allow(''),
-  }).required(),
-  VitalSigns: Joi.object({
-    systolicBP: Joi.number().required(),
-    diastolicBP: Joi.number().required(),
-    heartRate: Joi.number().required(),
-    buttonHeartRate: Joi.string().required().allow(''),
-  }).required(),
-  EKG12Leads: Joi.string().required().allow(''),
-  NIHSS: Joi.object({
-    levelOfConsciousness: Joi.number().required(),
-    twoQuestions: Joi.number().required(),
-    twoCommands: Joi.number().required(),
-    bestGaze: Joi.number().required(),
-    bestVisual: Joi.number().required(),
-    facialPalsy: Joi.number().required(),
-    bestMotorLeftArm: Joi.number().required(),
-    bestMotorRightArm: Joi.number().required(),
-    bestMotorLeftLeg: Joi.number().required(),
-    bestMotorRightLeg: Joi.number().required(),
-    limbAtaxia: Joi.number().required(),
-    sensory: Joi.number().required(),
-    bestLanguageAphasia: Joi.number().required(),
-    dysarthria: Joi.number().required(),
-    extinctionOrNeglect: Joi.number().required(),
-  }).required(),
+const informationDataSchema = Joi.object({
+  PatientInformation_patientID: Joi.number().required(),
+  PatientInformation_age: Joi.number().required(),
+  PatientInformation_firstName: Joi.string().required(),
+  PatientInformation_lastName: Joi.string().required(),
+  PatientInformation_gender: Joi.string().required(),
+  PatientInformation_arrivalDate: Joi.string().required(),
+  PatientInformation_clearDate: Joi.string().required().allow(null),
+  PatientInformation_lastDate: Joi.string().required().allow(null),
+  PatientInformation_firstDate: Joi.string().required().allow(null),
+  PatientInformation_onset: Joi.string().required(),
+  ChiefComplaint_timeCourse: Joi.string().required(),
+  ChiefComplaint_symptoms_alterationOfConsciousness: Joi.boolean().required(),
+  ChiefComplaint_symptoms_facialWeakness: Joi.boolean().required(),
+  ChiefComplaint_symptoms_facialWeaknessLeft: Joi.boolean().required(),
+  ChiefComplaint_symptoms_facialWeaknessRight: Joi.boolean().required(),
+  ChiefComplaint_symptoms_hemiparesis: Joi.boolean().required(),
+  ChiefComplaint_symptoms_hemiparesisLeft: Joi.boolean().required(),
+  ChiefComplaint_symptoms_hemiparesisRight: Joi.boolean().required(),
+  ChiefComplaint_symptoms_hemiparesthesia: Joi.boolean().required(),
+  ChiefComplaint_symptoms_hemiparesthesiaLeft: Joi.boolean().required(),
+  ChiefComplaint_symptoms_hemiparesthesiaRight: Joi.boolean().required(),
+  ChiefComplaint_symptoms_dysarthria: Joi.boolean().required(),
+  ChiefComplaint_symptoms_aphasia: Joi.boolean().required(),
+  ChiefComplaint_symptoms_ataxia: Joi.boolean().required(),
+  ChiefComplaint_symptoms_vertigo: Joi.boolean().required(),
+  ChiefComplaint_symptoms_visualProblem: Joi.boolean().required(),
+  ChiefComplaint_symptoms_other: Joi.boolean().required(),
+  ChiefComplaint_symptoms_otherText: Joi.string().required().allow(''),
+  UnderLyingDisease_deny: Joi.boolean().required(),
+  UnderLyingDisease_hx: Joi.boolean().required(),
+  UnderLyingDisease_previousTia: Joi.boolean().required(),
+  UnderLyingDisease_previousStroke: Joi.boolean().required(),
+  UnderLyingDisease_ht: Joi.boolean().required(),
+  UnderLyingDisease_dm: Joi.boolean().required(),
+  UnderLyingDisease_dlp: Joi.boolean().required(),
+  UnderLyingDisease_valvularHeartDisease: Joi.boolean().required(),
+  UnderLyingDisease_af: Joi.boolean().required(),
+  UnderLyingDisease_coronaryHeartDisease: Joi.boolean().required(),
+  UnderLyingDisease_ckd: Joi.boolean().required(),
+  UnderLyingDisease_peripheralArterialDisease: Joi.boolean().required(),
+  UnderLyingDisease_obesity: Joi.boolean().required(),
+  UnderLyingDisease_smoking: Joi.boolean().required(),
+  UnderLyingDisease_other: Joi.boolean().required(),
+  UnderLyingDisease_otherText: Joi.string().required().allow(''),
+  VitalSigns_systolicBP: Joi.number().required(),
+  VitalSigns_diastolicBP: Joi.number().required(),
+  VitalSigns_heartRate: Joi.number().required(),
+  VitalSigns_buttonHeartRate: Joi.string().required(),
+  EKG12Leads: Joi.string().required(),
+  NIHSS_levelOfConsciousness: Joi.string().required(),
+  NIHSS_twoQuestions: Joi.string().required(),
+  NIHSS_twoCommands: Joi.string().required(),
+  NIHSS_bestGaze: Joi.string().required(),
+  NIHSS_bestVisual: Joi.string().required(),
+  NIHSS_facialPalsy: Joi.string().required(),
+  NIHSS_bestMotorLeftArm: Joi.string().required(),
+  NIHSS_bestMotorRightArm: Joi.string().required(),
+  NIHSS_bestMotorLeftLeg: Joi.string().required(),
+  NIHSS_bestMotorRightLeg: Joi.string().required(),
+  NIHSS_limbAtaxia: Joi.string().required(),
+  NIHSS_sensory: Joi.string().required(),
+  NIHSS_bestLanguageAphasia: Joi.string().required(),
+  NIHSS_dysarthria: Joi.string().required(),
+  NIHSS_extinctionOrNeglect: Joi.string().required(),
 });
 
 const submitPatient = async (req: Request, res: Response) => {
   try {
     // validate incoming request body
-    const data = await frontDataSchema.validateAsync(req.body);
-
-    // create const path collect path
-    const path: Array<string> = [];
-
-    // Loop upload and append path to const path
-    // check file as array
-    if (req.files && req.files instanceof Array) {
-      req.files.forEach(async (file) => {
-        const upload = await axios({
-          headers: {
-            Authorization:
-              'Bearer ya29.c.KqYBDgg829Qewovd64HMm5d7eeY_u-aO-4Vwfsi4ClGhqVDuP_4tLFxJqtROk7Ou1gLuyR3bzAbniNPYt7VN8fYd3WG4lGRlmz71b27fMqgeRNfP0PqU9u7ahPdPDlRcUT23tje3E7kbkS1smMJ_p7iyKW07cFvrragGe7Z4haiYaXxGyI1xBAq3BldNPZYpPkkovmGUyKnXUmLgQtwmFxYf9fUN5bahLA',
-            'Content-Type': 'multipart/form-data',
-          },
-          url: 'http://localhost:3000/api/files/upload',
-          data: {
-            file: file.buffer,
-          },
-          method: 'post',
-        });
-
-        path.push(upload.data.path);
-      });
-    } else {
-      throw httpError(400, 'please upload file;\n file is required');
-    }
+    const data = await informationDataSchema.validateAsync(req.body);
 
     // Insert template data to DB
-    const patient = await insertInfo('Author', data, path);
+    const patient = await insertInfo('Author', data, []);
     const predict = await insertPredict(patient.data.testID);
 
     // If insert error
@@ -134,6 +95,27 @@ const submitPatient = async (req: Request, res: Response) => {
     } else if (predict instanceof BaseError) {
       throw predict;
     }
+
+    // create const path collect path
+    // const path: Array<string> = [];
+
+    // Loop upload and append path to const path
+    // check file as array;
+    const path = await Promise.all(
+      (<Express.Multer.File[]>req.files).map(
+        async (file, count) =>
+          (
+            await upload(
+              file.buffer,
+              `result/${patient.data.testID}/upload/`,
+              `${count}`,
+            )
+          ).gsutilURI,
+      ),
+    );
+    console.log(path);
+
+    updateInfoPath(patient.data.testID, path);
 
     // POST to ML
     const mlAnalyse = await axios({
@@ -159,13 +141,31 @@ const submitPatient = async (req: Request, res: Response) => {
       method: 'POST',
     });
 
-    res.json(mlPredict);
+    const imgPath = await Promise.all(
+      mlAnalyse.data.img_bytes.map(
+        async (byte: string, n: string) =>
+          (
+            await upload(
+              base64toImg(byte),
+              `result/${patient.data.testID}/img`,
+              n,
+            )
+          ).url,
+      ),
+    );
 
-    // TODO: base64 to img and upload to Cloud
-
-    // mlAnalyse.data.heatmap_bytes.forEach((byte: string) => {
-    //   upload(base64toImg(byte));
-    // });
+    const heatmapPath = await Promise.all(
+      mlAnalyse.data.heatmap_bytes.map(
+        async (byte: string, n: string) =>
+          (
+            await upload(
+              base64toImg(byte),
+              `result/${patient.data.testID}/heatMap`,
+              n,
+            )
+          ).url,
+      ),
+    );
 
     // FIXME: path data
     await updatePredict(patient.data.testID, {
@@ -173,9 +173,9 @@ const submitPatient = async (req: Request, res: Response) => {
       total_slices: mlAnalyse.data.total_slices,
       max_score_slice: mlAnalyse.data.max_score_slice,
       max_ct_score: mlAnalyse.data.max_ct_score,
-      imgPath: [],
-      heatmapPath: [],
-      ctScores: [],
+      imgPath: imgPath,
+      heatmapPath: heatmapPath,
+      ctScores: mlAnalyse.data.ct_score,
     });
 
     res.status(200).send({
@@ -183,17 +183,27 @@ const submitPatient = async (req: Request, res: Response) => {
       statusText: 'SUCCESS',
       description: 'submit success',
       data: {
-        information: patient.data,
+        information: await findInfo(patient.data.testID),
         predict: await findPredict(patient.data.testID),
       },
     });
   } catch (e: any) {
-    if (e instanceof BaseError) {
+    if (e.response) {
+      console.log(e.response.data);
+      console.log(e.response.status);
+      console.log(e.response.headers);
+      res
+        .status(500)
+        .send(httpError(500, `server receive response error : ${e}`));
+    } else if (e.request) {
+      res.status(500).send(httpError(500, `server can't request : ${e}`));
+      console.log(e.request);
+    } else if (e instanceof BaseError) {
       res.status(e.statusCode).send(e);
     } else if (e instanceof Joi.ValidationError) {
       res.status(400).send(httpError(400, `${e.name}:${e.message}`));
     } else {
-      res.json({
+      res.status(500).json({
         status: 'unknow',
         error: e,
       });

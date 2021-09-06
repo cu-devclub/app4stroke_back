@@ -1,168 +1,155 @@
 import mongoose from 'mongoose';
 
 export interface info {
-  PatientInformation: {
-    patientID: number;
-    age: number;
-    firstName: string;
-    lastName: string;
-    gender: string;
-    arrivalDate: string;
-    arrivalTime: string;
-    clearDate: string;
-    clearTime: string;
-    lastDate: string;
-    lastTime: string;
-    firstDate: string;
-    firstTime: string;
-    onset: string;
-  };
-  ChiefComplaint: {
-    timeCourse: string;
-    alterationOfConsciousness: boolean;
-    facialWeakness: boolean;
-    facialWeaknessLeft: boolean;
-    facialWeaknessRight: boolean;
-    hemiparesis: boolean;
-    hemiparesisLeft: boolean;
-    hemiparesisRight: boolean;
-    hemiparesthesia: boolean;
-    hemiparesthesiaLeft: boolean;
-    hemiparesthesiaRight: boolean;
-    dysarthria: boolean;
-    aphasia: boolean;
-    ataxia: boolean;
-    vertigo: boolean;
-    visualProblem: boolean;
-    other: boolean;
-    otherText: string;
-  };
-  Underlying: {
-    deny: boolean;
-    hx: boolean;
-    previousTia: boolean;
-    previousStroke: boolean;
-    ht: boolean;
-    dm: boolean;
-    dlp: boolean;
-    valvularHeartDisease: boolean;
-    af: boolean;
-    coronaryHeartDisease: boolean;
-    ckd: boolean;
-    peripheralArterialDisease: boolean;
-    obesity: boolean;
-    smoking: boolean;
-    other: boolean;
-    otherText: string;
-  };
-  VitalSigns: {
-    systolicBP: number;
-    diastolicBP: number;
-    heartRate: number;
-    buttonHeartRate: string;
-  };
+  PatientInformation_patientID: number;
+  PatientInformation_age: number;
+  PatientInformation_firstName: string;
+  PatientInformation_lastName: string;
+  PatientInformation_gender: string;
+  PatientInformation_arrivalDate: string;
+  PatientInformation_clearDate: string | null;
+  PatientInformation_lastDate: string | null;
+  PatientInformation_firstDate: string | null;
+  PatientInformation_onset: string;
+  ChiefComplaint_timeCourse: string;
+  ChiefComplaint_symptoms_alterationOfConsciousness: boolean;
+  ChiefComplaint_symptoms_facialWeakness: boolean;
+  ChiefComplaint_symptoms_facialWeaknessLeft: boolean;
+  ChiefComplaint_symptoms_facialWeaknessRight: boolean;
+  ChiefComplaint_symptoms_hemiparesis: boolean;
+  ChiefComplaint_symptoms_hemiparesisLeft: boolean;
+  ChiefComplaint_symptoms_hemiparesisRight: boolean;
+  ChiefComplaint_symptoms_hemiparesthesia: boolean;
+  ChiefComplaint_symptoms_hemiparesthesiaLeft: boolean;
+  ChiefComplaint_symptoms_hemiparesthesiaRight: boolean;
+  ChiefComplaint_symptoms_dysarthria: boolean;
+  ChiefComplaint_symptoms_aphasia: boolean;
+  ChiefComplaint_symptoms_ataxia: boolean;
+  ChiefComplaint_symptoms_vertigo: boolean;
+  ChiefComplaint_symptoms_visualProblem: boolean;
+  ChiefComplaint_symptoms_other: boolean;
+  ChiefComplaint_symptoms_otherText: string;
+  UnderLyingDisease_deny: boolean;
+  UnderLyingDisease_hx: boolean;
+  UnderLyingDisease_previousTia: boolean;
+  UnderLyingDisease_previousStroke: boolean;
+  UnderLyingDisease_ht: boolean;
+  UnderLyingDisease_dm: boolean;
+  UnderLyingDisease_dlp: boolean;
+  UnderLyingDisease_valvularHeartDisease: boolean;
+  UnderLyingDisease_af: boolean;
+  UnderLyingDisease_coronaryHeartDisease: boolean;
+  UnderLyingDisease_ckd: boolean;
+  UnderLyingDisease_peripheralArterialDisease: boolean;
+  UnderLyingDisease_obesity: boolean;
+  UnderLyingDisease_smoking: boolean;
+  UnderLyingDisease_other: boolean;
+  UnderLyingDisease_otherText: string;
+  VitalSigns_systolicBP: number;
+  VitalSigns_diastolicBP: number;
+  VitalSigns_heartRate: number;
+  VitalSigns_buttonHeartRate: string;
   EKG12Leads: string;
-  NIHSS: {
-    levelOfConsciousness: number;
-    twoQuestions: number;
-    twoCommands: number;
-    bestGaze: number;
-    bestVisual: number;
-    facialPalsy: number;
-    bestMotorLeftArm: number;
-    bestMotorRightArm: number;
-    bestMotorLeftLeg: number;
-    bestMotorRightLeg: number;
-    limbAtaxia: number;
-    sensory: number;
-    bestLanguageAphasia: number;
-    dysarthria: number;
-    extinctionOrNeglect: number;
-  };
+  NIHSS_levelOfConsciousness: string;
+  NIHSS_twoQuestions: string;
+  NIHSS_twoCommands: string;
+  NIHSS_bestGaze: string;
+  NIHSS_bestVisual: string;
+  NIHSS_facialPalsy: string;
+  NIHSS_bestMotorLeftArm: string;
+  NIHSS_bestMotorRightArm: string;
+  NIHSS_bestMotorLeftLeg: string;
+  NIHSS_bestMotorRightLeg: string;
+  NIHSS_limbAtaxia: string;
+  NIHSS_sensory: string;
+  NIHSS_bestLanguageAphasia: string;
+  NIHSS_dysarthria: string;
+  NIHSS_extinctionOrNeglect: string;
 }
 
 const infoSchema = new mongoose.Schema({
-  PatientInformation: {
-    patientID: { type: Number, required: true },
-    age: { type: Number, required: true },
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
-    gender: { type: String, required: true },
-    arrivalDate: { type: String, required: true },
-    arrivalTime: { type: String, required: true },
-    clearDate: { type: String, default: '' },
-    clearTime: { type: String, default: '' },
-    lastDate: { type: String, default: '' },
-    lastTime: { type: String, default: '' },
-    firstDate: { type: String, default: '' },
-    firstTime: { type: String, default: '' },
-    onset: { type: String, required: true },
+  PatientInformation_patientID: { type: Number, required: true },
+  PatientInformation_age: { type: Number, required: true },
+  PatientInformation_firstName: { type: String, required: true },
+  PatientInformation_lastName: { type: String, required: true },
+  PatientInformation_gender: { type: String, required: true },
+  PatientInformation_arrivalDate: { type: String, required: true },
+  PatientInformation_clearDate: { type: String, default: null },
+  PatientInformation_lastDate: { type: String, required: null },
+  PatientInformation_firstDate: { type: String, required: null },
+  PatientInformation_onset: { type: String, required: true },
+  ChiefComplaint_timeCourse: { type: String, required: true },
+  ChiefComplaint_symptoms_alterationOfConsciousness: {
+    type: Boolean,
+    required: true,
   },
-  ChiefComplaint: {
-    timeCourse: { type: String, required: true },
-    alterationOfConsciousness: { type: Boolean, required: true },
-    facialWeakness: { type: Boolean, required: true },
-    facialWeaknessLeft: { type: Boolean, required: true },
-    facialWeaknessRight: { type: Boolean, required: true },
-    hemiparesis: { type: Boolean, required: true },
-    hemiparesisLeft: { type: Boolean, required: true },
-    hemiparesisRight: { type: Boolean, required: true },
-    hemiparesthesia: { type: Boolean, required: true },
-    hemiparesthesiaLeft: { type: Boolean, required: true },
-    hemiparesthesiaRight: { type: Boolean, required: true },
-    dysarthria: { type: Boolean, required: true },
-    aphasia: { type: Boolean, required: true },
-    ataxia: { type: Boolean, required: true },
-    vertigo: { type: Boolean, required: true },
-    visualProblem: { type: Boolean, required: true },
-    other: { type: Boolean, required: true },
-    otherText: { type: String, default: '' },
+  ChiefComplaint_symptoms_facialWeakness: { type: Boolean, required: true },
+  ChiefComplaint_symptoms_facialWeaknessLeft: { type: Boolean, required: true },
+  ChiefComplaint_symptoms_facialWeaknessRight: {
+    type: Boolean,
+    required: true,
   },
-  Underlying: {
-    deny: { type: Boolean, required: true },
-    hx: { type: Boolean, required: true },
-    previousTia: { type: Boolean, required: true },
-    previousStroke: { type: Boolean, required: true },
-    ht: { type: Boolean, required: true },
-    dm: { type: Boolean, required: true },
-    dlp: { type: Boolean, required: true },
-    valvularHeartDisease: { type: Boolean, required: true },
-    af: { type: Boolean, required: true },
-    coronaryHeartDisease: { type: Boolean, required: true },
-    ckd: { type: Boolean, required: true },
-    peripheralArterialDisease: { type: Boolean, required: true },
-    obesity: { type: Boolean, required: true },
-    smoking: { type: Boolean, required: true },
-    other: { type: Boolean, required: true },
-    otherText: { type: String, default: '' },
+  ChiefComplaint_symptoms_hemiparesis: { type: Boolean, required: true },
+  ChiefComplaint_symptoms_hemiparesisLeft: { type: Boolean, required: true },
+  ChiefComplaint_symptoms_hemiparesisRight: { type: Boolean, required: true },
+  ChiefComplaint_symptoms_hemiparesthesia: { type: Boolean, required: true },
+  ChiefComplaint_symptoms_hemiparesthesiaLeft: {
+    type: Boolean,
+    required: true,
   },
-  VitalSigns: {
-    systolicBP: { type: Number, required: true },
-    diastolicBP: { type: Number, required: true },
-    heartRate: { type: Number, required: true },
-    buttonHeartRate: { type: String, default: '' },
+  ChiefComplaint_symptoms_hemiparesthesiaRight: {
+    type: Boolean,
+    required: true,
   },
-  EKG12Leads: { type: String, default: '' },
-  NIHSS: {
-    levelOfConsciousness: { type: Number, required: true },
-    twoQuestions: { type: Number, required: true },
-    twoCommands: { type: Number, required: true },
-    bestGaze: { type: Number, required: true },
-    bestVisual: { type: Number, required: true },
-    facialPalsy: { type: Number, required: true },
-    bestMotorLeftArm: { type: Number, required: true },
-    bestMotorRightArm: { type: Number, required: true },
-    bestMotorLeftLeg: { type: Number, required: true },
-    bestMotorRightLeg: { type: Number, required: true },
-    limbAtaxia: { type: Number, required: true },
-    sensory: { type: Number, required: true },
-    bestLanguageAphasia: { type: Number, required: true },
-    dysarthria: { type: Number, required: true },
-    extinctionOrNeglect: { type: Number, required: true },
+  ChiefComplaint_symptoms_dysarthria: { type: Boolean, required: true },
+  ChiefComplaint_symptoms_aphasia: { type: Boolean, required: true },
+  ChiefComplaint_symptoms_ataxia: { type: Boolean, required: true },
+  ChiefComplaint_symptoms_vertigo: { type: Boolean, required: true },
+  ChiefComplaint_symptoms_visualProblem: { type: Boolean, required: true },
+  ChiefComplaint_symptoms_other: { type: Boolean, required: true },
+  ChiefComplaint_symptoms_otherText: { type: String, default: '' },
+  UnderLyingDisease_deny: { type: Boolean, required: true },
+  UnderLyingDisease_hx: { type: Boolean, required: true },
+  UnderLyingDisease_previousTia: { type: Boolean, required: true },
+  UnderLyingDisease_previousStroke: { type: Boolean, required: true },
+  UnderLyingDisease_ht: { type: Boolean, required: true },
+  UnderLyingDisease_dm: { type: Boolean, required: true },
+  UnderLyingDisease_dlp: { type: Boolean, required: true },
+  UnderLyingDisease_valvularHeartDisease: { type: Boolean, required: true },
+  UnderLyingDisease_af: { type: Boolean, required: true },
+  UnderLyingDisease_coronaryHeartDisease: { type: Boolean, required: true },
+  UnderLyingDisease_ckd: { type: Boolean, required: true },
+  UnderLyingDisease_peripheralArterialDisease: {
+    type: Boolean,
+    required: true,
   },
+  UnderLyingDisease_obesity: { type: Boolean, required: true },
+  UnderLyingDisease_smoking: { type: Boolean, required: true },
+  UnderLyingDisease_other: { type: Boolean, required: true },
+  UnderLyingDisease_otherText: { type: String, default: '' },
+  VitalSigns_systolicBP: { type: Number, required: true },
+  VitalSigns_diastolicBP: { type: Number, required: true },
+  VitalSigns_heartRate: { type: Number, required: true },
+  VitalSigns_buttonHeartRate: { type: String, required: true },
+  EKG12Leads: { type: String, required: true },
+  NIHSS_levelOfConsciousness: { type: String, required: true },
+  NIHSS_twoQuestions: { type: String, required: true },
+  NIHSS_twoCommands: { type: String, required: true },
+  NIHSS_bestGaze: { type: String, required: true },
+  NIHSS_bestVisual: { type: String, required: true },
+  NIHSS_facialPalsy: { type: String, required: true },
+  NIHSS_bestMotorLeftArm: { type: String, required: true },
+  NIHSS_bestMotorRightArm: { type: String, required: true },
+  NIHSS_bestMotorLeftLeg: { type: String, required: true },
+  NIHSS_bestMotorRightLeg: { type: String, required: true },
+  NIHSS_limbAtaxia: { type: String, required: true },
+  NIHSS_sensory: { type: String, required: true },
+  NIHSS_bestLanguageAphasia: { type: String, required: true },
+  NIHSS_dysarthria: { type: String, required: true },
+  NIHSS_extinctionOrNeglect: { type: String, required: true },
   addDate: { type: Date, default: Date.now() },
   author: { type: String, required: true },
-  imgPath: { type: Array, of: String, required: true },
+  filePath: { type: Array, of: String, required: true },
   testID: { type: Number, required: true },
 });
 

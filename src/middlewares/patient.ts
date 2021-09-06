@@ -1,3 +1,4 @@
+import { NumberSchema } from 'joi';
 import httpError from '../errorHandler/httpError/httpError';
 import informationData, { info } from '../models/infoData';
 
@@ -9,7 +10,7 @@ export interface insertInfoResult {
 const insertInfo = async (
   author: string,
   data: info,
-  imgPath: Array<string>,
+  filePath: Array<string>,
 ): Promise<insertInfoResult | any> => {
   try {
     const count = await countInfo();
@@ -21,12 +22,20 @@ const insertInfo = async (
       data: await new informationData({
         ...data,
         author: author,
-        imgPath: imgPath,
+        filePath: filePath,
         testID: count + 1,
       }).save(),
     };
   } catch (e: any) {
     return httpError(500, `DB: Can't insert ${e.toString()}`);
+  }
+};
+
+const updateInfoPath = async (id: number, path: Array<string>) => {
+  try {
+    return await informationData.updateOne({ testID: id }, { imgPath: path });
+  } catch (e: any) {
+    return httpError(500, `DB: Can't Update ${e.toString()}`);
   }
 };
 
@@ -46,4 +55,4 @@ const findInfo = async (testID: number) => {
   }
 };
 
-export { insertInfo, countInfo, findInfo };
+export { insertInfo, updateInfoPath, countInfo, findInfo };
