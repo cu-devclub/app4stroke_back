@@ -25,7 +25,7 @@ const predictSchema = new mongoose.Schema({
   maxScmax_score_sliceoreSlice: { type: String, default: '' },
   max_ct_score: { type: String, default: '' },
   imgPath: { type: Array, of: String, default: [] },
-  heatmap_path: { type: Array, of: String, default: [] },
+  heatmapPath: { type: Array, of: String, default: [] },
   ctScores: { type: Array, of: String, default: [] },
   prob: { type: String, default: '' },
   top_pos_factors: { type: Array, of: String, default: [] },

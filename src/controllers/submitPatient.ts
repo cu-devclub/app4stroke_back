@@ -113,7 +113,6 @@ const submitPatient = async (req: Request, res: Response) => {
           ).gsutilURI,
       ),
     );
-    console.log(path);
 
     updateInfoPath(patient.data.testID, path);
 
