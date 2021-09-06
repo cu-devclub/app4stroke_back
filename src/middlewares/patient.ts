@@ -1,6 +1,6 @@
 import { NumberSchema } from 'joi';
 import httpError from '../errorHandler/httpError/httpError';
-import informationData, { info } from '../models/infoData';
+import informationData, { info, infoDb } from '../models/infoData';
 
 export interface insertInfoResult {
   success: Boolean;
@@ -35,7 +35,15 @@ const updateInfoPath = async (id: number, path: Array<string>) => {
   try {
     return await informationData.updateOne({ testID: id }, { imgPath: path });
   } catch (e: any) {
-    return httpError(500, `DB: Can't Update ${e.toString()}`);
+    return httpError(500, `DB: Can't path ${e.toString()}`);
+  }
+};
+
+const updateInfo = async (id: number, data: infoDb) => {
+  try {
+    return await informationData.updateOne({ testID: id }, data);
+  } catch (e: any) {
+    return httpError(500, `DB: Can't Update Information ${e.toString()}`);
   }
 };
 
@@ -55,4 +63,4 @@ const findInfo = async (testID: number) => {
   }
 };
 
-export { insertInfo, updateInfoPath, countInfo, findInfo };
+export { insertInfo, updateInfoPath, countInfo, findInfo, updateInfo };

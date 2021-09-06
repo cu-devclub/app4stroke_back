@@ -67,6 +67,12 @@ export interface info {
   NIHSS_extinctionOrNeglect: string;
 }
 
+export interface infoDb extends info {
+  author: string;
+  filePath: Array<string>;
+  testID: number;
+}
+
 const infoSchema = new mongoose.Schema({
   PatientInformation_patientID: { type: Number, required: true },
   PatientInformation_age: { type: Number, required: true },
@@ -75,8 +81,8 @@ const infoSchema = new mongoose.Schema({
   PatientInformation_gender: { type: String, required: true },
   PatientInformation_arrivalDate: { type: String, required: true },
   PatientInformation_clearDate: { type: String, default: null },
-  PatientInformation_lastDate: { type: String, required: null },
-  PatientInformation_firstDate: { type: String, required: null },
+  PatientInformation_lastDate: { type: String, default: null },
+  PatientInformation_firstDate: { type: String, default: null },
   PatientInformation_onset: { type: String, required: true },
   ChiefComplaint_timeCourse: { type: String, required: true },
   ChiefComplaint_symptoms_alterationOfConsciousness: {

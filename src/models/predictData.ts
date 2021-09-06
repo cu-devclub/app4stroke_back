@@ -16,6 +16,10 @@ export interface predict {
   top_neg_impacts: Array<string>;
 }
 
+export interface predictDb extends predict {
+  testID: number;
+}
+
 const predictSchema = new mongoose.Schema({
   total_slices: { type: String, default: '' },
   maxScmax_score_sliceoreSlice: { type: String, default: '' },
