@@ -1,4 +1,4 @@
-import { NumberSchema } from 'joi';
+import { NumberSchema, object } from 'joi';
 import httpError from '../errorHandler/httpError/httpError';
 import informationData, { info, infoDb } from '../models/infoData';
 
@@ -55,9 +55,9 @@ const countInfo = async () => {
   }
 };
 
-const findInfo = async (testID: number) => {
+const findInfo = async (filter: object) => {
   try {
-    return await informationData.find({ testID: testID });
+    return await informationData.find(filter);
   } catch (e: any) {
     return httpError(500, `DB: Can't Find ${e.toString()}`);
   }

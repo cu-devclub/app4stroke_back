@@ -183,8 +183,8 @@ const submitPatient = async (req: Request, res: Response) => {
       statusText: 'SUCCESS',
       description: 'submit success',
       data: {
-        information: await findInfo(patient.data.testID),
-        predict: await findPredict(patient.data.testID),
+        information: await findInfo({ testID: patient.data.testID }),
+        predict: await findPredict({ testID: patient.data.testID }),
       },
     });
   } catch (e: any) {
