@@ -73,6 +73,10 @@ export interface infoDb extends info {
   testID: number;
 }
 
+export interface infoDbOut extends infoDb {
+  addDate: string;
+}
+
 const infoSchema = new mongoose.Schema({
   PatientInformation_patientID: { type: Number, required: true },
   PatientInformation_age: { type: Number, required: true },
