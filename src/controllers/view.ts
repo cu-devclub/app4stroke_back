@@ -13,8 +13,8 @@ const view = async (req: Request, res: Response) => {
   try {
     const data = await schema.validateAsync(req.params);
 
-    const info = await findInfo(data.id);
-    const predict = await findPredict(data.id);
+    const info = await findInfo({ testID: data.id });
+    const predict = await findPredict({ testID: data.id });
     res.status(200).send({
       data: {
         information: info,
@@ -24,8 +24,11 @@ const view = async (req: Request, res: Response) => {
   } catch (e: any) {
     if (e instanceof BaseError) {
       res.status(e.statusCode).send(e);
-    } else if (e instanceof Joi.ValidationError) {
-      res.status(400).send(httpError(400, `${e.name}:${e.message}`));
+    } else {
+      res.status(500).json({
+        status: 'unknow',
+        error: e,
+      });
     }
   }
 };
