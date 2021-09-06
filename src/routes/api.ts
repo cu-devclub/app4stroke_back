@@ -1,18 +1,14 @@
 import { Router } from 'express';
 import healthRouter from './health';
-import predictScoreRouter from './predictScore';
 import userRouter from './user';
 import fileRouter from './file';
-import analyseDicom from './analyseDicom';
-import submitPatient from './submitPatient';
+import submitPatientRouter from './submitPatient';
 import view from './view';
 
 const router = Router();
 
 router.use(healthRouter);
-router.use(predictScoreRouter);
-router.use(analyseDicom);
-router.use(submitPatient);
+router.use(submitPatientRouter);
 router.use(view);
 // router.use(authRouter);
 router.use('/user', userRouter);
