@@ -33,7 +33,7 @@ const insertInfo = async (
 
 const updateInfoPath = async (id: number, path: Array<string>) => {
   try {
-    return await informationData.updateOne({ testID: id }, { imgPath: path });
+    return await informationData.updateOne({ testID: id }, { filePath: path });
   } catch (e: any) {
     return httpError(500, `DB: Can't path ${e.toString()}`);
   }

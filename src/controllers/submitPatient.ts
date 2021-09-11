@@ -174,7 +174,7 @@ const submitPatient = async (req: Request, res: Response) => {
       max_ct_score: mlAnalyse.data.max_ct_score,
       imgPath: imgPath,
       heatmapPath: heatmapPath,
-      ctScores: mlAnalyse.data.ct_score,
+      ctScores: mlAnalyse.data.ct_scores,
     });
 
     res.status(200).send({
