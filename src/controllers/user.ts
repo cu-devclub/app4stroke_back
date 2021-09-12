@@ -65,6 +65,7 @@ export default {
       res.status(500).send('Error in Saving');
     }
   },
+
   login: async (req: Request, res: Response) => {
     [
       check('email', 'Please enter a valid email').isEmail(),
@@ -123,6 +124,7 @@ export default {
       });
     }
   },
+
   me: async (req: Request, res: Response) => {
     try {
       isUserRequest(req);
@@ -137,10 +139,12 @@ export default {
       viewTitle: 'Insert User',
     });
   },
+
   postUser: (req: Request, res: Response): void => {
     if (req.body._id == '') insertRecord(req, res);
     else updateRecord(req, res);
   },
+
   getUserList: (req: Request, res: Response): void => {
     User.find((err: any, docs: any) => {
       if (!err) {
@@ -152,6 +156,7 @@ export default {
       }
     });
   },
+
   updateUser: (req: Request, res: Response): void => {
     User.findById(req.params.id, (err: any, doc: any) => {
       if (!err) {
@@ -162,6 +167,7 @@ export default {
       }
     });
   },
+
   deleteUser: (req: Request, res: Response): void => {
     User.findByIdAndRemove(req.params.id, undefined, (err: any) => {
       if (!err) {
