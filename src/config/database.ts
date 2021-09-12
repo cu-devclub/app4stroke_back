@@ -1,9 +1,8 @@
 import mongoose from 'mongoose';
 
-const MONGOURI = `mongodb+srv://root:CuSHn5mIEKu1apvd@cluster0.ab6gl.mongodb.net/test`;
-const InitiateMongoServer = async () => {
+const InitiateMongoServer = async (mongoUrl: string) => {
   try {
-    await mongoose.connect(MONGOURI, {
+    await mongoose.connect(mongoUrl, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
