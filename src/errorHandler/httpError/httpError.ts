@@ -30,7 +30,7 @@ const httpError = (code: number, description?: string) => {
     case 500:
       return new InternalServerError(description);
     default:
-      return undefined;
+      return new BaseError('Unknow Error', 0, description);
   }
 };
 

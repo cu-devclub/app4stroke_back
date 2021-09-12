@@ -1,15 +1,17 @@
-const dotenv = require('dotenv');
-dotenv.config();
+import mongoose from 'mongoose';
 
-const mongoose = require('mongoose');
+const MONGOURI = `mongodb+srv://root:CuSHn5mIEKu1apvd@cluster0.ab6gl.mongodb.net/test`;
+const InitiateMongoServer = async () => {
+  try {
+    await mongoose.connect(MONGOURI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('Connected to DB !!');
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+};
 
-mongoose.connect(process.env.DB_URI, {
-    useNewUrlParser: true
-}, (err: any) => {
-    if (!err) { console.log('MongoDB Connection Succeeded.') }
-    else { console.log('Error in DB connection : ' + err) }
-});
-
-require('../models/user');
-
-export{};
+export default InitiateMongoServer;

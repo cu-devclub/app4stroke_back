@@ -1,15 +1,29 @@
 # app4stroke_back
 
-### Commands
+## Commands
 
 - For development process
-: `npm run dev`
+  : `npm run dev`
 
 - For production process
-: `npm run prod`
+  : `npm run prod`
 
 - For code linting
-: `npm run lint`
+  : `npm run lint`
 
 - For code formatting
-: `npm run format`
+  : `npm run format`
+
+# Api
+
+Api Documentation for you
+
+## patient
+
+- [submit patient]() : `POST /api/submitPatient`
+- [view]() : `GET /api/view/{id}`
+-
+
+# Error handler
+
+- [http error](/tree/dev/src/errorHandler/httpError)
