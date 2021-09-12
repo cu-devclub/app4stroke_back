@@ -11,7 +11,6 @@ import { allowInsecurePrototypeAccess } from '@handlebars/allow-prototype-access
 // import bodyparser from 'body-parser';
 
 import apiRouter from './routes/api';
-import bodyParser from 'body-parser';
 
 dotenv.config();
 const APP_PORT = process.env.APP_PORT;
@@ -22,11 +21,9 @@ const mg = morgan('dev');
 
 app.use(cors());
 app.use(mg);
-app.use(bodyParser.json());
-app.use('/api', apiRouter);
-
-app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.urlencoded());
+app.use('/api', apiRouter);
 
 app.set('views', path.join(__dirname, '/views/'));
 app.engine(

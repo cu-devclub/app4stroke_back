@@ -184,9 +184,9 @@ const isUserRequest: (
 
 function insertRecord(req: Request, res: Response) {
   const user = new User();
-  user.fullName = req.body.fullName;
-  user.email = req.body.email;
-  user.mobile = req.body.mobile;
+  // user.fullName = req.body.fullName;
+  // user.email = req.body.email;
+  // user.mobile = req.body.mobile;
   user.save((err: any) => {
     if (!err) res.redirect('/list');
     else {

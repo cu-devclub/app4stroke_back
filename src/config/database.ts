@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const MONGOURI = `mongodb+srv://Tor4848:qfcavmiBiIAzLZvG@cluster0.xdrbs.mongodb.net/test`;
+const MONGOURI = `mongodb+srv://root:CuSHn5mIEKu1apvd@cluster0.ab6gl.mongodb.net/test`;
 const InitiateMongoServer = async () => {
   try {
     await mongoose.connect(MONGOURI, {
