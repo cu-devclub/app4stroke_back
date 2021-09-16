@@ -1,6 +1,6 @@
-import bucket from '../config/storage';
 import path from 'path';
 import FileType from 'file-type';
+import s3 from '../config/s3';
 
 const upload = async (buffer: any, filePath: string, fileName: string) => {
   const { ext, mime } = (await FileType.fromBuffer(buffer)) || {
@@ -9,21 +9,18 @@ const upload = async (buffer: any, filePath: string, fileName: string) => {
   };
 
   const fullPath = path.join(filePath, fileName + '.' + ext);
-  const file = bucket.file(fullPath);
 
-  return new Promise<any>((resolve, reject) => {
-    file
-      .save(buffer)
-      .then(() => {
-        resolve({
-          url: `https://storage.cloud.google.com/stroke_images_3/${fullPath}`,
-          gsutilURI: `gs://stroke_images_3/${fullPath}`,
-        });
-      })
-      .catch(() => {
-        reject({});
-      });
+  var params = {
+    Bucket: "app4stroke",
+    Key: fullPath,
+    Body: buffer,
+  };
+
+  s3.putObject(params, function(err) {
+    if (err) console.log(err);
   });
+
+  return { url: `s3://app4stroke/${fullPath}`, gsutilURI: `https://app4stroke.s3.ap-southeast-1.amazonaws.com/${fullPath}` };
 };
 
 export default upload;

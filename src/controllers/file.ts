@@ -18,8 +18,9 @@ export default {
   },
   download: async (req: Request, res: Response) => {
     try {
-      const filePath = req.params.filePath;
-      await download(`${filePath}`, req, res);
+      const filePath = 'ml/filename';
+
+      await download(filePath, req, res);
     } catch (err) {
       res
         .status(500)
