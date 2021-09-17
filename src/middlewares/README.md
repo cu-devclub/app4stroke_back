@@ -1,4 +1,4 @@
-# Upload to Google Cloud Storage
+# Upload to AWS S3
 
 ## Import
 
@@ -21,5 +21,28 @@ upload(buffer, path, name)
 import upload from '../middlewares/upload';
 
 const URI = await upload(buffer, "folder1/folder2", "testfile");
-console.log(URI); // { "url": "https://storage.cloud.google.com/stroke_images_3/folder1/folder2/testfile.ext", "gsutilURI": "gs://stroke_images_3/folder1/folder2/testfile.ext" }
+console.log(URI); // { "url": "s3://app4stroke/folder1/folder2/testfile.ext", "gsutilURI": "https://app4stroke.s3.ap-southeast-1.amazonaws.com/folder1/folder2/testfile.ext" }
+```
+
+# Download from AWS S3
+
+## Import
+
+```typescript
+import download from '../middlewares/download';
+
+```
+
+## Usage
+`
+download(filePath, req, res)
+`
+
+- filePath : string
+
+## Example
+```typescript
+import download from '../middlewares/download';
+
+await download("folder1/folder2/testfile.ext", req, res);
 ```
