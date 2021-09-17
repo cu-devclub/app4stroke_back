@@ -2,9 +2,7 @@ import path from 'path';
 import FileType from 'file-type';
 import s3 from '../config/s3';
 
-const upload = async (base64: any, filePath: string, fileName: string) => {
-  const buffer = Buffer.from(base64, 'base64');
-
+const upload = async (buffer: any, filePath: string, fileName: string) => {
   const { ext, mime } = (await FileType.fromBuffer(buffer)) || {
     ext: 'unknown',
     mime: 'unknown',
