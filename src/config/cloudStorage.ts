@@ -60,8 +60,9 @@ class S3storage implements storage {
     location: string,
     fileName: string,
   ): Promise<uploadResponse> {
-    let { ext } = (await FileType.fromBuffer(buffer)) || {
+    let { ext, mime } = (await FileType.fromBuffer(buffer)) || {
       ext: 'unknown',
+      mime: 'unknown',
     };
 
     let fullPath = path.join(location, fileName + '.' + ext);
@@ -70,39 +71,43 @@ class S3storage implements storage {
       Bucket: this.bucket,
       Key: fullPath,
       Body: buffer,
+      ContentType: mime.toString(),
     };
 
     return new Promise((resolve, reject) => {
-      this.s3.putObject(params, async (err: Error, data: Object) => {
+      this.s3.putObject(params, async (err: AWS.AWSError) => {
         if (err) {
+          reject({
+            success: false,
+          });
+        } else {
           resolve({
             success: true,
             uri: `s3://${this.bucket}/${fullPath}`,
             url: `https://${this.bucket}.s3.${this.region}.amazonaws.com/${fullPath}`,
             path: fullPath,
           });
-        } else {
-          reject({
-            success: false,
-          });
         }
       });
     });
   }
 
-  async download(path: string): Promise<Object | Error> {
+  async download(path: string): Promise<AWS.S3.GetObjectOutput | AWS.AWSError> {
     let params = {
       Bucket: this.bucket,
       Key: path,
     };
     return new Promise((resolve, reject) => {
-      this.s3.getObject(params, async (err: Error, data: Object) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(data);
-        }
-      });
+      this.s3.getObject(
+        params,
+        async (err: AWS.AWSError, data: AWS.S3.GetObjectOutput) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(data);
+          }
+        },
+      );
     });
   }
 
@@ -152,8 +157,9 @@ class googleStorage implements storage {
     location: string,
     fileName: string,
   ): Promise<uploadResponse> {
-    let { ext } = (await FileType.fromBuffer(buffer)) || {
+    let { ext, mime } = (await FileType.fromBuffer(buffer)) || {
       ext: 'unknown',
+      mime: 'unknown',
     };
 
     let fullPath = path.join(location, fileName + '.' + ext);
@@ -162,15 +168,15 @@ class googleStorage implements storage {
     return new Promise((resolve, reject) => {
       file.save(buffer, async (err) => {
         if (err) {
+          reject({
+            success: false,
+          });
+        } else {
           resolve({
             success: true,
             uri: `gs://${this.bucket.name}/${fullPath}`,
             url: `https://storage.cloud.google.com/${this.bucket.name}/${fullPath}`,
             path: fullPath,
-          });
-        } else {
-          reject({
-            success: false,
           });
         }
       });
