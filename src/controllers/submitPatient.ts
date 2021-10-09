@@ -112,10 +112,9 @@ const submitPatient = async (req: Request, res: Response) => {
         if (!upload.success) {
           throw httpError(500, `Error: Can't upload file`);
         }
-        if (upload.uri) {
+        if (typeof upload.uri === 'string') {
           return upload.uri;
         }
-        console.log('UPLOAD');
       }),
     );
 
@@ -173,7 +172,6 @@ const submitPatient = async (req: Request, res: Response) => {
       ),
     );
 
-    // FIXME: path data
     await updatePredict(patient.data.testID, {
       ...mlPredict.data,
       total_slices: mlAnalyse.data.total_slices,

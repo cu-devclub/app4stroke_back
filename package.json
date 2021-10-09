@@ -19,10 +19,10 @@
     "@types/bcryptjs": "^2.4.2",
     "@types/cors": "^2.8.10",
     "@types/express": "^4.17.12",
-    "@types/jsonwebtoken": "^8.5.4",
     "@types/express-handlebars": "^5.3.1",
+    "@types/jsonwebtoken": "^8.5.4",
     "@types/morgan": "^1.9.2",
-    "@types/node": "^15.12.2",
+    "@types/node": "^15.14.9",
     "@typescript-eslint/eslint-plugin": "^4.30.0",
     "@typescript-eslint/parser": "^4.30.0",
     "eslint": "^7.28.0",
@@ -55,6 +55,7 @@
     "mongodb": "^4.1.0",
     "mongoose": "^5.13.7",
     "morgan": "^1.10.0",
-    "multer": "^1.4.2"
+    "multer": "^1.4.2",
+    "tsc": "^2.0.3"
   }
 }
