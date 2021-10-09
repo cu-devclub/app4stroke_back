@@ -12,6 +12,8 @@ import {
 import BaseError from '../errorHandler/httpError/Component/baseError';
 import base64toImg from '../middlewares/base64toImg';
 import storage from '../config/storage';
+import submitStatusObj from '../errorHandler/processError/Component/submitStatusObj';
+import precessError from '../errorHandler/processError/precessError';
 
 const informationDataSchema = Joi.object({
   PatientInformation_patientID: Joi.number().required(),
@@ -81,13 +83,24 @@ const informationDataSchema = Joi.object({
 });
 
 const submitPatient = async (req: Request, res: Response) => {
+  const processStatus: submitStatusObj = {
+    isInsertedInfo: false,
+    isInsertedPredict: false,
+    testID: null,
+    isUploaded: false,
+  };
+
   try {
     // validate incoming request body
     const data = await informationDataSchema.validateAsync(req.body);
 
     // Insert template data to DB
     const patient = await insertInfo('Author', data, []);
+    processStatus.isInsertedInfo = true;
     const predict = await insertPredict(patient.data.testID);
+    processStatus.isInsertedPredict = true;
+
+    processStatus.testID = patient.data.testID;
 
     // If insert error
     if (patient instanceof BaseError) {
@@ -95,9 +108,6 @@ const submitPatient = async (req: Request, res: Response) => {
     } else if (predict instanceof BaseError) {
       throw predict;
     }
-
-    // create const path collect path
-    // const path: Array<string> = [];
 
     // Loop upload and append path to const path
     // check file as array;
@@ -117,10 +127,12 @@ const submitPatient = async (req: Request, res: Response) => {
         }
       }),
     );
+    processStatus.isUploaded = true;
 
     const path = _path.filter((ele): ele is string => typeof ele === 'string');
 
     updateInfoPath(patient.data.testID, path);
+    console.log(path);
 
     // POST to ML
     const mlAnalyse = await axios({
@@ -192,6 +204,7 @@ const submitPatient = async (req: Request, res: Response) => {
       },
     });
   } catch (e: any) {
+    await precessError(processStatus);
     if (e.response) {
       console.log(e.response.data);
       console.log(e.response.status);
