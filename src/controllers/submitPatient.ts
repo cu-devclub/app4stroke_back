@@ -11,7 +11,7 @@ import {
 } from '../middlewares/predict';
 import BaseError from '../errorHandler/httpError/Component/baseError';
 import base64toImg from '../middlewares/base64toImg';
-import upload from '../middlewares/upload';
+import storage from '../config/storage';
 
 const informationDataSchema = Joi.object({
   PatientInformation_patientID: Joi.number().required(),
@@ -101,18 +101,25 @@ const submitPatient = async (req: Request, res: Response) => {
 
     // Loop upload and append path to const path
     // check file as array;
-    const path = await Promise.all(
-      (<Express.Multer.File[]>req.files).map(
-        async (file, count) =>
-          (
-            await upload(
-              file.buffer,
-              `result/${patient.data.testID}/upload/`,
-              `${count}`,
-            )
-          ).gsutilURI,
-      ),
+    const _path = await Promise.all(
+      (<Express.Multer.File[]>req.files).map(async (file, count) => {
+        let upload = await storage.upload(
+          file.buffer,
+          `result/${patient.data.testID}/upload/`,
+          `${count}`,
+        );
+
+        if (!upload.success) {
+          throw httpError(500, `Error: Can't upload file`);
+        }
+        if (upload.uri) {
+          return upload.uri;
+        }
+        console.log('UPLOAD');
+      }),
     );
+
+    const path = _path.filter((ele): ele is string => typeof ele === 'string');
 
     updateInfoPath(patient.data.testID, path);
 
@@ -144,7 +151,7 @@ const submitPatient = async (req: Request, res: Response) => {
       mlAnalyse.data.img_bytes.map(
         async (byte: string, n: string) =>
           (
-            await upload(
+            await storage.upload(
               base64toImg(byte),
               `result/${patient.data.testID}/img`,
               n,
@@ -157,7 +164,7 @@ const submitPatient = async (req: Request, res: Response) => {
       mlAnalyse.data.heatmap_bytes.map(
         async (byte: string, n: string) =>
           (
-            await upload(
+            await storage.upload(
               base64toImg(byte),
               `result/${patient.data.testID}/heatMap`,
               n,
