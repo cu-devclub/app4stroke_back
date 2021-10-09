@@ -20,6 +20,8 @@ export interface storage {
   ): Promise<uploadResponse>;
   download(path: string): Promise<Object | Error>;
   delete(path: string): Promise<deleteResponse>;
+  listFiles(prefixPath: string): Promise<Array<string | undefined>>;
+  deletes(directory: string): Promise<deleteResponse>;
 }
 
 //
@@ -53,6 +55,11 @@ class S3storage implements storage {
       secretAccessKey: secretAccessKey,
       region: region,
     });
+  }
+
+  // FIX:
+  deletes(directory: string): Promise<deleteResponse> {
+    throw new Error('Method not implemented.');
   }
 
   async upload(
@@ -130,6 +137,24 @@ class S3storage implements storage {
       });
     });
   }
+
+  listFiles(prefixPath: string): Promise<Array<string | undefined>> {
+    let params = {
+      Bucket: this.bucket,
+      Prefix: prefixPath,
+    };
+    return new Promise((resolve, reject) => {
+      this.s3.listObjectsV2(params, async (err, files) => {
+        if (err) {
+          reject({});
+        } else {
+          if (files.Contents) {
+            resolve(files.Contents.map((ele) => ele.Key));
+          }
+        }
+      });
+    });
+  }
 }
 
 //
@@ -150,6 +175,11 @@ class googleStorage implements storage {
     this.bucket = new Storage({ keyFilename: 'google-cloud-key.json' }).bucket(
       bucket,
     );
+  }
+
+  // FIX:
+  deletes(directory: string): Promise<deleteResponse> {
+    throw new Error('Method not implemented.');
   }
 
   async upload(
@@ -209,6 +239,18 @@ class googleStorage implements storage {
           resolve({
             success: true,
           });
+        }
+      });
+    });
+  }
+
+  async listFiles(prefixPath: string): Promise<Array<string>> {
+    return new Promise((resolve, reject) => {
+      this.bucket.getFiles({ prefix: prefixPath }, async (err, files: any) => {
+        if (err) {
+          reject({});
+        } else {
+          resolve(files.map((ele: any) => ele.name));
         }
       });
     });
