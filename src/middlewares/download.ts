@@ -1,22 +1,25 @@
 import { Request, Response } from 'express';
 import httpError from '../errorHandler/httpError/httpError';
-import bucket from '../config/storage';
+
+import s3 from '../config/s3';
 
 const download = async (filePath: string, req: Request, res: Response) => {
     try {
-        const file = bucket.file(filePath);
-        const readStream = file.createReadStream();
+        const params = {
+            Bucket: "app4stroke",
+            Key: filePath
+        }
 
-        await file
-            .getMetadata()
-            .then((metadata) => {
-                res.setHeader("content-type", metadata[0].contentType);
-                readStream.pipe(res);
-            });
+        res.setHeader('Content-Disposition', 'attachment');
 
+        s3.getObject(params)
+            .createReadStream()
+                .on('error', function(err){
+                    res.status(500).send(httpError(500, "Error: " + err));
+            }).pipe(res);
     } catch (err) {
-        res.status(404).send(httpError(404, "No such file found."));
+        res.status(404).send(httpError(404, "The file could not be accessed."));
     }
-}
+};
 
 export default download;
