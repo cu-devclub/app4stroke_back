@@ -30,4 +30,12 @@ const updatePredict = async (testID: number, data: predict) => {
   }
 };
 
-export { insertPredict, findPredict, updatePredict };
+const delPredict = async (id: number) => {
+  try {
+    return await predictData.deleteOne({ testID: id });
+  } catch (e: any) {
+    return httpError(500, `DB: Can't Delete ${e.toString()}`);
+  }
+};
+
+export { insertPredict, findPredict, updatePredict, delPredict };

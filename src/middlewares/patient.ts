@@ -1,4 +1,3 @@
-import { NumberSchema, object } from 'joi';
 import httpError from '../errorHandler/httpError/httpError';
 import informationData, { info, infoDb } from '../models/infoData';
 
@@ -63,4 +62,12 @@ const findInfo = async (filter: object) => {
   }
 };
 
-export { insertInfo, updateInfoPath, countInfo, findInfo, updateInfo };
+const delInfo = async (id: number) => {
+  try {
+    return await informationData.deleteOne({ testID: id });
+  } catch (e: any) {
+    return httpError(500, `DB: Can't Delete ${e.toString()}`);
+  }
+};
+
+export { insertInfo, updateInfoPath, countInfo, findInfo, updateInfo, delInfo };
