@@ -57,9 +57,31 @@ class S3storage implements storage {
     });
   }
 
-  // FIX:
-  deletes(directory: string): Promise<deleteResponse> {
-    throw new Error('Method not implemented.');
+  async deletes(directory: string): Promise<deleteResponse> {
+    if (!directory.endsWith('/')) directory += '/';
+
+    let params: AWS.S3.DeleteObjectsRequest = {
+      Bucket: this.bucket,
+      Delete: { Objects: [] },
+    };
+
+    (await this.listFiles(directory)).forEach((ele) => {
+      if (ele) params.Delete.Objects.push({ Key: ele });
+    });
+
+    return new Promise((resolve, reject) => {
+      this.s3.deleteObjects(params, async (err: Error, data: Object) => {
+        if (err) {
+          reject({
+            success: false,
+          });
+        } else {
+          resolve({
+            success: true,
+          });
+        }
+      });
+    });
   }
 
   async upload(
@@ -138,7 +160,9 @@ class S3storage implements storage {
     });
   }
 
-  listFiles(prefixPath: string): Promise<Array<string | undefined>> {
+  async listFiles(prefixPath: string): Promise<Array<string | undefined>> {
+    if (!prefixPath.endsWith('/')) prefixPath += '/';
+
     let params = {
       Bucket: this.bucket,
       Prefix: prefixPath,
@@ -164,7 +188,7 @@ class S3storage implements storage {
 //  | ==================== |
 //
 //
-import { Bucket, Storage } from '@google-cloud/storage';
+import { Bucket, DeleteFilesOptions, Storage } from '@google-cloud/storage';
 
 class googleStorage implements storage {
   keyFilename: string;
@@ -177,9 +201,22 @@ class googleStorage implements storage {
     );
   }
 
-  // FIX:
   deletes(directory: string): Promise<deleteResponse> {
-    throw new Error('Method not implemented.');
+    if (!directory.endsWith('/')) directory += '/';
+    return new Promise((resolve, reject) => {
+      let params: DeleteFilesOptions = { prefix: directory };
+      this.bucket.deleteFiles(params, async (err) => {
+        if (err) {
+          reject({
+            success: false,
+          });
+        } else {
+          resolve({
+            success: true,
+          });
+        }
+      });
+    });
   }
 
   async upload(
@@ -245,6 +282,8 @@ class googleStorage implements storage {
   }
 
   async listFiles(prefixPath: string): Promise<Array<string>> {
+    if (!prefixPath.endsWith('/')) prefixPath += '/';
+
     return new Promise((resolve, reject) => {
       this.bucket.getFiles({ prefix: prefixPath }, async (err, files: any) => {
         if (err) {
