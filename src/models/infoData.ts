@@ -65,6 +65,7 @@ export interface info {
   NIHSS_bestLanguageAphasia: string;
   NIHSS_dysarthria: string;
   NIHSS_extinctionOrNeglect: string;
+  testID?: number | null;
 }
 
 export interface infoDb extends info {
