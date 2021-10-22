@@ -11,6 +11,7 @@ const insertInfo = async (
   data: info,
   filePath: Array<string>,
 ): Promise<insertInfoResult | any> => {
+  delete data.testID;
   try {
     const count = await countInfo();
     if (count instanceof Error) {
@@ -48,7 +49,12 @@ const updateInfo = async (id: number, data: infoDb) => {
 
 const countInfo = async () => {
   try {
-    return await informationData.countDocuments();
+    if ((await informationData.countDocuments({})) == 0) {
+      return 0;
+    } else {
+      const last = await informationData.find().sort({ testID: -1 }).limit(1);
+      return last[0].testID;
+    }
   } catch (e: any) {
     return httpError(500, `DB: Can't count ${e.toString()}`);
   }
