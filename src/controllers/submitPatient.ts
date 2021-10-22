@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import Joi from 'joi';
 import httpError from '../errorHandler/httpError/httpError';
 import mapFrontToMl from '../middlewares/mapFrontToMl';
-import { findInfo, insertInfo, updateInfoPath } from '../middlewares/patient';
+import { findInfo, insertInfo, updateInfo } from '../middlewares/patient';
 import {
   findPredict,
   insertPredict,
@@ -16,6 +16,7 @@ import submitStatusObj from '../errorHandler/processError/Component/submitStatus
 import precessError from '../errorHandler/processError/precessError';
 
 const informationDataSchema = Joi.object({
+  testID: Joi.number().required().allow(null),
   PatientInformation_patientID: Joi.number().required(),
   PatientInformation_age: Joi.number().required(),
   PatientInformation_firstName: Joi.string().required(),
@@ -83,6 +84,12 @@ const informationDataSchema = Joi.object({
 });
 
 const submitPatient = async (req: Request, res: Response) => {
+  for (let property in req.body) {
+    if (req.body[property] == 'null') {
+      req.body[property] = null;
+    }
+  }
+
   const processStatus: submitStatusObj = {
     isInsertedInfo: false,
     isInsertedPredict: false,
@@ -93,20 +100,24 @@ const submitPatient = async (req: Request, res: Response) => {
   try {
     // validate incoming request body
     const data = await informationDataSchema.validateAsync(req.body);
-
     // Insert template data to DB
-    const patient = await insertInfo('Author', data, []);
+    const patient = data.testID
+      ? { data: { testID: data.testID } }
+      : await insertInfo('Author', data, []);
     processStatus.isInsertedInfo = true;
-    const predict = await insertPredict(patient.data.testID);
+    const predict = data.testID
+      ? null
+      : await insertPredict(patient.data.testID);
     processStatus.isInsertedPredict = true;
-
     processStatus.testID = patient.data.testID;
-
     // If insert error
     if (patient instanceof BaseError) {
       throw patient;
     } else if (predict instanceof BaseError) {
       throw predict;
+    }
+    if (data.testID) {
+      storage.deletes(`result/${patient.data.testID}/`);
     }
 
     // Loop upload and append path to const path
@@ -131,7 +142,11 @@ const submitPatient = async (req: Request, res: Response) => {
 
     const path = _path.filter((ele): ele is string => typeof ele === 'string');
 
-    updateInfoPath(patient.data.testID, path);
+    updateInfo(patient.data.testID, {
+      ...data,
+      filePath: path,
+      author: 'update Author',
+    });
     console.log(path);
 
     // POST to ML
@@ -205,20 +220,13 @@ const submitPatient = async (req: Request, res: Response) => {
     });
   } catch (e: any) {
     await precessError(processStatus);
-    if (e.response) {
-      console.log(e.response.data);
-      console.log(e.response.status);
-      console.log(e.response.headers);
-      res
-        .status(500)
-        .send(httpError(500, `server receive response error : ${e}`));
-    } else if (e.request) {
+    if (e.request) {
       res.status(500).send(httpError(500, `server can't request : ${e}`));
       console.log(e.request);
-    } else if (e instanceof BaseError) {
-      res.status(e.statusCode).send(e);
     } else if (e instanceof Joi.ValidationError) {
       res.status(400).send(httpError(400, `${e.name}:${e.message}`));
+    } else if (e instanceof BaseError) {
+      res.status(e.statusCode).send(e);
     } else {
       res.status(500).json({
         status: 'unknow',
