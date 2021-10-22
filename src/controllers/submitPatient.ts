@@ -182,7 +182,7 @@ const submitPatient = async (req: Request, res: Response) => {
               `result/${patient.data.testID}/img`,
               n,
             )
-          ).url,
+          ).path,
       ),
     );
 
@@ -195,7 +195,7 @@ const submitPatient = async (req: Request, res: Response) => {
               `result/${patient.data.testID}/heatMap`,
               n,
             )
-          ).url,
+          ).path,
       ),
     );
 
