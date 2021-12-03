@@ -22,7 +22,7 @@ export interface predictDb extends predict {
 
 const predictSchema = new mongoose.Schema({
   total_slices: { type: String, default: '' },
-  maxScmax_score_sliceoreSlice: { type: String, default: '' },
+  max_score_slice: { type: String, default: '' },
   max_ct_score: { type: String, default: '' },
   imgPath: { type: Array, of: String, default: [] },
   heatmapPath: { type: Array, of: String, default: [] },
