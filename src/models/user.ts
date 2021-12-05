@@ -5,6 +5,8 @@ export interface User {
   username?: string;
   email?: string;
   password?: string;
+  permissions?: string;
+  organization?: string;
 }
 
 const userSchema = new mongoose.Schema({
@@ -16,9 +18,18 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  organization: {
+    type: String,
+    required: true,
+  },
   password: {
     type: String,
     required: true,
+  },
+  permissions: {
+    type: String,
+    enum: ['user', 'admin'],
+    default: 'user',
   },
   createdAt: {
     type: Date,
