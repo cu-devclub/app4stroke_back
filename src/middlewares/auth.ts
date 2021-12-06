@@ -1,33 +1,26 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import jwt from 'jsonwebtoken';
+import decodeToken from './decodeToken';
 import { Request, Response } from 'express';
+import BaseError from '../errorHandler/httpError/Component/baseError';
+import user, { User } from '../models/user';
 
-import { User } from '../models/user';
-
-interface Idecode extends jwt.JwtPayload {
-  user?: User;
-  iat: number;
-  exp: number;
-}
-
-export default (req: Request, res: Response, next: any) => {
-  let token = req.header('authorization');
-  if (token) {
-    token = token.split(' ')[1];
-  } else {
-    return res.status(401).json({ message: 'Auth Error' });
-  }
+const auth = async (req: Request, res: Response): Promise<User | null> => {
   try {
-    const decoded: Idecode = <Idecode>jwt.verify(token, 'randomString');
-    req.user = {
-      id: decoded.user?.id,
-      username: decoded.user?.username,
-      email: decoded.user?.email,
-    };
-
-    next();
-  } catch (e) {
-    console.error(e);
-    res.status(500).send({ message: 'Invalid Token' });
+    let decode = await decodeToken(req);
+    if (decode instanceof BaseError) {
+      throw decode;
+    } else {
+      let userInformation: User = await user.findOne({
+        username: decode.username,
+      });
+      return userInformation;
+    }
+  } catch (e: unknown) {
+    if (e instanceof BaseError) {
+      res.status(e.statusCode).send(e);
+      return null;
+    }
   }
+  return null;
 };
+
+export default auth;

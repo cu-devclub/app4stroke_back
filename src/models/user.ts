@@ -1,10 +1,12 @@
 import mongoose from 'mongoose';
 
 export interface User {
-  id?: string;
-  username?: string;
-  email?: string;
-  password?: string;
+  id: string;
+  username: string;
+  email: string;
+  password: string;
+  permissions: string;
+  organization?: string;
 }
 
 const userSchema = new mongoose.Schema({
@@ -16,9 +18,18 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  organization: {
+    type: String,
+    default: '',
+  },
   password: {
     type: String,
     required: true,
+  },
+  permissions: {
+    type: String,
+    enum: ['user', 'admin'],
+    default: 'user',
   },
   createdAt: {
     type: Date,
