@@ -11,7 +11,10 @@ const schema = Joi.object({
 });
 
 const view = async (req: Request, res: Response) => {
-  auth(req, res);
+  const authResult = await auth(req, res);
+  if (!authResult) {
+    return;
+  }
   try {
     const data = await schema.validateAsync(req.params);
 

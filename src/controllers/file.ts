@@ -5,7 +5,10 @@ import auth from '../middlewares/auth';
 
 export default {
   download: async (req: Request, res: Response) => {
-    auth(req, res);
+    const authResult = await auth(req, res);
+    if (!authResult) {
+      return;
+    }
     try {
       const dl = await storage.download(req.params.path);
       if (dl instanceof Error) {

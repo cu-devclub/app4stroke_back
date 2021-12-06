@@ -7,7 +7,10 @@ import { findPredict } from '../middlewares/predict';
 import { infoDbOut } from '../models/infoData';
 
 const result = async (req: Request, res: Response) => {
-  auth(req, res);
+  const authResult = await auth(req, res);
+  if (!authResult) {
+    return;
+  }
   try {
     const infos = await findInfo({});
     const predicts = await findPredict({});

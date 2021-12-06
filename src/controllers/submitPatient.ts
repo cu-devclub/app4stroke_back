@@ -85,7 +85,10 @@ const informationDataSchema = Joi.object({
 });
 
 const submitPatient = async (req: Request, res: Response) => {
-  const user = await auth(req, res);
+  const authResult = await auth(req, res);
+  if (!authResult) {
+    return;
+  }
   for (let property in req.body) {
     if (req.body[property] == 'null') {
       req.body[property] = null;
