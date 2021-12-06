@@ -23,7 +23,7 @@ const login = async (req: Request, res: Response) => {
           token: jwt.sign(
             { username: aUser.username },
             process.env.JWT_SECRET_KEY || 'KEY',
-            { expiresIn: 60 },
+            { expiresIn: 3600 },
           ),
         });
       }
