@@ -14,7 +14,7 @@ import base64toImg from '../middlewares/base64toImg';
 import storage from '../config/storage';
 import submitStatusObj from '../errorHandler/processError/Component/submitStatusObj';
 import precessError from '../errorHandler/processError/precessError';
-import auth from './auth';
+import auth from '../middlewares/auth';
 
 const informationDataSchema = Joi.object({
   testID: Joi.number().required().allow(null),

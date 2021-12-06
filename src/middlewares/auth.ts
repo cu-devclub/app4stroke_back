@@ -1,4 +1,4 @@
-import decodeToken from '../middlewares/decodeToken';
+import decodeToken from './decodeToken';
 import { Request, Response } from 'express';
 import BaseError from '../errorHandler/httpError/Component/baseError';
 import user, { User } from '../models/user';

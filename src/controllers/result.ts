@@ -1,11 +1,13 @@
 import { Request, Response } from 'express';
 import BaseError from '../errorHandler/httpError/Component/baseError';
 import httpError from '../errorHandler/httpError/httpError';
+import auth from '../middlewares/auth';
 import { findInfo } from '../middlewares/patient';
 import { findPredict } from '../middlewares/predict';
 import { infoDbOut } from '../models/infoData';
 
 const result = async (req: Request, res: Response) => {
+  auth(req, res);
   try {
     const infos = await findInfo({});
     const predicts = await findPredict({});

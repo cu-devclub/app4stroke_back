@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Joi from 'joi';
 import BaseError from '../errorHandler/httpError/Component/baseError';
 import httpError from '../errorHandler/httpError/httpError';
+import auth from '../middlewares/auth';
 import { findInfo } from '../middlewares/patient';
 import { findPredict } from '../middlewares/predict';
 
@@ -10,6 +11,7 @@ const schema = Joi.object({
 });
 
 const view = async (req: Request, res: Response) => {
+  auth(req, res);
   try {
     const data = await schema.validateAsync(req.params);
 

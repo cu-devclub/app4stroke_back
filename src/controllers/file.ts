@@ -1,12 +1,11 @@
 import { Request, Response } from 'express';
 import httpError from '../errorHandler/httpError/httpError';
-
-import upload from '../middlewares/upload';
-import download from '../middlewares/download';
 import storage from '../config/storage';
+import auth from '../middlewares/auth';
 
 export default {
   download: async (req: Request, res: Response) => {
+    auth(req, res);
     try {
       const dl = await storage.download(req.params.path);
       if (dl instanceof Error) {
