@@ -6,7 +6,13 @@ import jwt from 'jsonwebtoken';
 import User from '../models/user';
 
 interface UserRequest extends Request {
-  user: { username: string; email: string; password: string };
+  user: {
+    username: string;
+    email: string;
+    password: string;
+    permissions: string;
+    id: string;
+  };
 }
 
 export default {
