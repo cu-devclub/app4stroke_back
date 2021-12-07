@@ -1,47 +1,27 @@
+import BaseError from '../errorHandler/httpError/Component/baseError';
 import httpError from '../errorHandler/httpError/httpError';
-import informationData, { info, infoDb } from '../models/infoData';
+import informationData, { info } from '../models/infoData';
 
 export interface insertInfoResult {
   success: Boolean;
   data: Object;
 }
 
-const insertInfo = async (
-  author: string,
-  data: info,
-  filePath: Array<string>,
-): Promise<insertInfoResult | any> => {
-  delete data.testID;
+const insertInfo = async (data: info): Promise<info | BaseError> => {
   try {
     const count = await countInfo();
     if (count instanceof Error) {
       throw count;
     }
-    return {
-      success: true,
-      data: await new informationData({
-        ...data,
-        author: author,
-        filePath: filePath,
-        testID: count + 1,
-      }).save(),
-    };
+    return <info>(<unknown>await new informationData(data).save());
   } catch (e: any) {
     return httpError(500, `DB: Can't insert ${e.toString()}`);
   }
 };
 
-const updateInfoPath = async (id: number, path: Array<string>) => {
+const updateInfo = async (ID: number, data: Partial<info>) => {
   try {
-    return await informationData.updateOne({ testID: id }, { filePath: path });
-  } catch (e: any) {
-    return httpError(500, `DB: Can't path ${e.toString()}`);
-  }
-};
-
-const updateInfo = async (id: number, data: infoDb) => {
-  try {
-    return await informationData.updateOne({ testID: id }, data);
+    return await informationData.updateOne({ testID: ID }, data);
   } catch (e: any) {
     return httpError(500, `DB: Can't Update Information ${e.toString()}`);
   }
@@ -60,15 +40,15 @@ const countInfo = async () => {
   }
 };
 
-const findInfo = async (filter: object) => {
+const findInfo = async (ID: number) => {
   try {
-    return await informationData.find(filter);
+    return await informationData.find({ testID: ID });
   } catch (e: any) {
     return httpError(500, `DB: Can't Find ${e.toString()}`);
   }
 };
 
-const delInfo = async (id: number) => {
+const deleteInfo = async (id: number) => {
   try {
     return await informationData.deleteOne({ testID: id });
   } catch (e: any) {
@@ -76,4 +56,4 @@ const delInfo = async (id: number) => {
   }
 };
 
-export { insertInfo, updateInfoPath, countInfo, findInfo, updateInfo, delInfo };
+export { insertInfo, countInfo, findInfo, updateInfo, deleteInfo };
