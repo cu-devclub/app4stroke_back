@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-export interface predict {
+export interface record {
   total_slices: Number;
   max_score_slice: Number;
   max_ct_score: Number;
@@ -16,17 +16,17 @@ export interface predict {
   top_neg_impacts: Array<string>;
 }
 
-export interface predictDb extends predict {
-  testID: number;
+export interface recordInDb extends record {
+  recordID: number;
 }
 
-const predictSchema = new mongoose.Schema({
+const recordSchema = new mongoose.Schema({
   total_slices: { type: String, default: '' },
   max_score_slice: { type: String, default: '' },
   max_ct_score: { type: String, default: '' },
-  imgPath: { type: Array, of: String, default: [] },
-  heatmapPath: { type: Array, of: String, default: [] },
-  ctScores: { type: Array, of: String, default: [] },
+  img_path: { type: Array, of: String, default: [] },
+  heatmap_path: { type: Array, of: String, default: [] },
+  ct_score: { type: Array, of: String, default: [] },
   prob: { type: String, default: '' },
   top_pos_factors: { type: Array, of: String, default: [] },
   top_pos_values: { type: Array, of: String, default: [] },
@@ -34,8 +34,8 @@ const predictSchema = new mongoose.Schema({
   top_neg_factors: { type: Array, of: String, default: [] },
   top_neg_values: { type: Array, of: String, default: [] },
   top_neg_impacts: { type: Array, of: String, default: [] },
-  addDate: { type: Date, default: Date.now() },
-  testID: { type: Number, required: true },
+  add_date: { type: Date, default: Date.now() },
+  recordID: { type: Number, required: true },
 });
 
-export default mongoose.model('predict', predictSchema);
+export default mongoose.model('record', recordSchema);
