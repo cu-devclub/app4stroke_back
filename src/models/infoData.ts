@@ -65,17 +65,12 @@ export interface info {
   NIHSS_bestLanguageAphasia: string;
   NIHSS_dysarthria: string;
   NIHSS_extinctionOrNeglect: string;
-  testID?: number | null;
 }
 
-export interface infoDb extends info {
+export interface infoInDb extends info {
   author: string;
-  filePath: Array<string>;
+  file_path: Array<string>;
   testID: number;
-}
-
-export interface infoDbOut extends infoDb {
-  addDate: string;
 }
 
 const infoSchema = new mongoose.Schema({
@@ -158,9 +153,9 @@ const infoSchema = new mongoose.Schema({
   NIHSS_bestLanguageAphasia: { type: String, required: true },
   NIHSS_dysarthria: { type: String, required: true },
   NIHSS_extinctionOrNeglect: { type: String, required: true },
-  addDate: { type: Date, default: Date.now() },
+  create_date: { type: Date, default: Date.now() },
   author: { type: String, required: true },
-  filePath: { type: Array, of: String, required: true },
+  file_path: { type: Array, of: String, required: true },
   testID: { type: Number, required: true },
 });
 
