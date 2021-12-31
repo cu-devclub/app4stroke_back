@@ -1,13 +1,14 @@
+import BaseError from '../errorHandler/httpError/Component/baseError';
 import httpError from '../errorHandler/httpError/httpError';
-import recordModel, { record } from '../models/record';
+import recordModel, { recordInDb, record } from '../models/record';
 
 const insertRecord = async (data: record) => {
   try {
     const count = await countRecord();
-    return {
-      success: true,
-      data: await new recordModel({ recordID: count, ...data }).save(),
-    };
+    if (count instanceof BaseError) {
+      throw count;
+    }
+    return await new recordModel({ recordID: count + 1, ...data }).save();
   } catch (e: any) {
     return httpError(
       500,
@@ -27,7 +28,18 @@ const findRecord = async (ID: Number) => {
   }
 };
 
-const updateRecord = async (ID: number, data: Partial<record>) => {
+const allRecord = async () => {
+  try {
+    return await recordModel.find({});
+  } catch (e: any) {
+    return httpError(
+      500,
+      `Internal Server Error : DB Error -> Can't Find -> ${e.toString()}`,
+    );
+  }
+};
+
+const updateRecord = async (ID: number, data: Partial<recordInDb>) => {
   try {
     return await recordModel.updateOne({ recordID: ID }, data);
   } catch (e: any) {
@@ -49,14 +61,9 @@ const deleteRecord = async (ID: number) => {
   }
 };
 
-const countRecord = async () => {
+const countRecord = async (): Promise<number | BaseError> => {
   try {
-    if ((await recordModel.countDocuments({})) == 0) {
-      return 0;
-    } else {
-      const last = await recordModel.find().sort({ testID: -1 }).limit(1);
-      return last[0].testID;
-    }
+    return await recordModel.countDocuments({});
   } catch (e: any) {
     return httpError(
       500,
@@ -65,4 +72,11 @@ const countRecord = async () => {
   }
 };
 
-export { insertRecord, findRecord, updateRecord, deleteRecord, countRecord };
+export {
+  insertRecord,
+  findRecord,
+  allRecord,
+  updateRecord,
+  deleteRecord,
+  countRecord,
+};

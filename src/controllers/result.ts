@@ -2,9 +2,9 @@ import { Request, Response } from 'express';
 import BaseError from '../errorHandler/httpError/Component/baseError';
 import httpError from '../errorHandler/httpError/httpError';
 import auth from '../middlewares/auth';
-import { findInfo } from '../middlewares/patient';
-import { findPredict } from '../middlewares/predict';
-import { infoDbOut } from '../models/infoData';
+import { allInfo } from '../middlewares/information';
+import { allRecord } from '../middlewares/record';
+import { infoInDb } from '../models/infoData';
 
 const result = async (req: Request, res: Response) => {
   const authResult = await auth(req, res);
@@ -12,18 +12,11 @@ const result = async (req: Request, res: Response) => {
     return;
   }
   try {
-    const infos = await findInfo({});
-    const predicts = await findPredict({});
-    if (infos.length !== predicts.length) {
-      throw httpError(
-        500,
-        'DB: error length of information not equal length of predict',
-      );
-    }
-    const merge = infos.map((info: infoDbOut, index: number) => ({
-      sameID: info.testID === predicts[index].testID,
+    const infos = await allInfo();
+    const predicts = await allRecord();
+    const merge = infos.map((info: infoInDb, index: number) => ({
       testID: info.testID,
-      date: info.addDate,
+      date: info.create_date,
       patientID: info.PatientInformation_patientID,
       firstName: info.PatientInformation_firstName,
       lastName: info.PatientInformation_lastName,

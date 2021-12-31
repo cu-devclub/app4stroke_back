@@ -1,25 +1,24 @@
 import BaseError from '../errorHandler/httpError/Component/baseError';
 import httpError from '../errorHandler/httpError/httpError';
-import informationData, { info } from '../models/infoData';
+import informationData, { info, infoInDb } from '../models/infoData';
 
-export interface insertInfoResult {
-  success: Boolean;
-  data: Object;
-}
-
-const insertInfo = async (data: info): Promise<info | BaseError> => {
+const insertInfo = async (data: infoInDb): Promise<info | BaseError> => {
   try {
     const count = await countInfo();
     if (count instanceof Error) {
       throw count;
     }
-    return <info>(<unknown>await new informationData(data).save());
+    return <info>(
+      (<unknown>(
+        await new informationData({ ...data, testID: count + 1 }).save()
+      ))
+    );
   } catch (e: any) {
     return httpError(500, `DB: Can't insert ${e.toString()}`);
   }
 };
 
-const updateInfo = async (ID: number, data: Partial<info>) => {
+const updateInfo = async (ID: number, data: Partial<infoInDb>) => {
   try {
     return await informationData.updateOne({ testID: ID }, data);
   } catch (e: any) {
@@ -48,6 +47,14 @@ const findInfo = async (ID: number) => {
   }
 };
 
+const allInfo = async () => {
+  try {
+    return await informationData.find({});
+  } catch (e: any) {
+    return httpError(500, `DB: Can't Find ${e.toString()}`);
+  }
+};
+
 const deleteInfo = async (id: number) => {
   try {
     return await informationData.deleteOne({ testID: id });
@@ -56,4 +63,4 @@ const deleteInfo = async (id: number) => {
   }
 };
 
-export { insertInfo, countInfo, findInfo, updateInfo, deleteInfo };
+export { insertInfo, countInfo, findInfo, allInfo, updateInfo, deleteInfo };

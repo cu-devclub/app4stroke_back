@@ -3,18 +3,15 @@ import { Request, Response } from 'express';
 import Joi from 'joi';
 import httpError from '../errorHandler/httpError/httpError';
 import mapFrontToMl from '../middlewares/mapFrontToMl';
-import { findInfo, insertInfo, updateInfo } from '../middlewares/patient';
-import {
-  findPredict,
-  insertPredict,
-  updatePredict,
-} from '../middlewares/predict';
 import BaseError from '../errorHandler/httpError/Component/baseError';
 import base64toImg from '../middlewares/base64toImg';
 import storage from '../config/storage';
 import submitStatusObj from '../errorHandler/processError/Component/submitStatusObj';
-import precessError from '../errorHandler/processError/precessError';
+// import precessError from '../errorHandler/processError/precessError';
 import auth from '../middlewares/auth';
+import { findInfo, insertInfo, updateInfo } from '../middlewares/information';
+import { info } from '../models/infoData';
+import { countRecord, findRecord, insertRecord } from '../middlewares/record';
 
 const informationDataSchema = Joi.object({
   testID: Joi.number().required().allow(null),
@@ -104,34 +101,21 @@ const submitPatient = async (req: Request, res: Response) => {
 
   try {
     // validate incoming request body
-    const data = await informationDataSchema.validateAsync(req.body);
-    // Insert template data to DB
-    const patient = data.testID
-      ? { data: { testID: data.testID } }
-      : await insertInfo('Author', data, []);
-    processStatus.isInsertedInfo = true;
-    const predict = data.testID
-      ? null
-      : await insertPredict(patient.data.testID);
-    processStatus.isInsertedPredict = true;
-    processStatus.testID = patient.data.testID;
-    // If insert error
-    if (patient instanceof BaseError) {
-      throw patient;
-    } else if (predict instanceof BaseError) {
-      throw predict;
-    }
-    if (data.testID) {
-      storage.deletes(`result/${patient.data.testID}/`);
-    }
+    const data = <info>await informationDataSchema.validateAsync(req.body);
 
     // Loop upload and append path to const path
     // check file as array;
+    const RecordCount = await countRecord();
+
+    if (RecordCount instanceof BaseError) {
+      throw RecordCount;
+    }
+
     const _path = await Promise.all(
       (<Express.Multer.File[]>req.files).map(async (file, count) => {
         let upload = await storage.upload(
           file.buffer,
-          `result/${patient.data.testID}/upload/`,
+          `record/${RecordCount + 1}/upload/`,
           `${count}`,
         );
 
@@ -146,13 +130,6 @@ const submitPatient = async (req: Request, res: Response) => {
     processStatus.isUploaded = true;
 
     const path = _path.filter((ele): ele is string => typeof ele === 'string');
-
-    updateInfo(patient.data.testID, {
-      ...data,
-      filePath: path,
-      author: 'update Author',
-    });
-    console.log(path);
 
     // POST to ML
     const mlAnalyse = await axios({
@@ -184,7 +161,7 @@ const submitPatient = async (req: Request, res: Response) => {
           (
             await storage.upload(
               base64toImg(byte),
-              `result/${patient.data.testID}/img`,
+              `record/${RecordCount + 1}/img`,
               n,
             )
           ).path,
@@ -197,34 +174,59 @@ const submitPatient = async (req: Request, res: Response) => {
           (
             await storage.upload(
               base64toImg(byte),
-              `result/${patient.data.testID}/heatMap`,
+              `record/${RecordCount + 1}/heatMap`,
               n,
             )
           ).path,
       ),
     );
 
-    await updatePredict(patient.data.testID, {
+    // Insert template data to DB
+    const patient = data.testID
+      ? await updateInfo(data.testID, { recordID: RecordCount + 1, ...data })
+      : await insertInfo({
+          ...data,
+          author: authResult.username,
+          recordID: RecordCount + 1,
+          file_path: path,
+        });
+    if (patient instanceof BaseError) {
+      throw patient;
+    } else {
+      processStatus.isInsertedInfo = true;
+    }
+
+    const record = await insertRecord({
       ...mlPredict.data,
       total_slices: mlAnalyse.data.total_slices,
       max_score_slice: mlAnalyse.data.max_score_slice,
       max_ct_score: mlAnalyse.data.max_ct_score,
-      imgPath: imgPath,
-      heatmapPath: heatmapPath,
-      ctScores: mlAnalyse.data.ct_scores,
+      img_path: imgPath,
+      heatmap_path: heatmapPath,
+      ct_score: mlAnalyse.data.ct_scores,
     });
+    processStatus.isInsertedPredict = true;
+    processStatus.testID = null;
+
+    // If insert error
+    if (patient instanceof BaseError) {
+      throw patient;
+    } else if (record instanceof BaseError) {
+      throw record;
+    }
 
     res.status(200).send({
       statusCode: 200,
       statusText: 'SUCCESS',
       description: 'submit success',
       data: {
-        information: await findInfo({ testID: patient.data.testID }),
-        predict: await findPredict({ testID: patient.data.testID }),
+        information: await findInfo(data.testID ? data.testID : patient.testID),
+        predict: await findRecord(RecordCount + 1),
       },
     });
   } catch (e: any) {
-    await precessError(processStatus);
+    // await precessError(processStatus);
+    console.log(e);
     if (e.request) {
       res.status(500).send(httpError(500, `server can't request : ${e}`));
       console.log(e.request);
