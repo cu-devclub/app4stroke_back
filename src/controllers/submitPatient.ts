@@ -7,7 +7,7 @@ import BaseError from '../errorHandler/httpError/Component/baseError';
 import base64toImg from '../middlewares/base64toImg';
 import storage from '../config/storage';
 import submitStatusObj from '../errorHandler/processError/Component/submitStatusObj';
-// import precessError from '../errorHandler/processError/precessError';
+import precessError from '../errorHandler/processError/precessError';
 import auth from '../middlewares/auth';
 import { findInfo, insertInfo, updateInfo } from '../middlewares/information';
 import { info } from '../models/infoData';
@@ -97,6 +97,7 @@ const submitPatient = async (req: Request, res: Response) => {
     isInsertedPredict: false,
     testID: null,
     isUploaded: false,
+    uploadID: null,
   };
 
   try {
@@ -127,6 +128,7 @@ const submitPatient = async (req: Request, res: Response) => {
         }
       }),
     );
+    processStatus.uploadID = RecordCount + 1;
     processStatus.isUploaded = true;
 
     const path = _path.filter((ele): ele is string => typeof ele === 'string');
@@ -206,7 +208,7 @@ const submitPatient = async (req: Request, res: Response) => {
       ct_score: mlAnalyse.data.ct_scores,
     });
     processStatus.isInsertedPredict = true;
-    processStatus.testID = null;
+    processStatus.testID = data.testID ? data.testID : patient.testID;
 
     // If insert error
     if (patient instanceof BaseError) {
@@ -225,7 +227,7 @@ const submitPatient = async (req: Request, res: Response) => {
       },
     });
   } catch (e: any) {
-    // await precessError(processStatus);
+    await precessError(processStatus);
     console.log(e);
     if (e.request) {
       res.status(500).send(httpError(500, `server can't request : ${e}`));
